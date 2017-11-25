@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Signup from './Signup';
 import Login from './Login';
 import Home from './Home';
@@ -9,15 +9,15 @@ homepage -> 2
 signup -> 3
 */
 
-class App extends Component {
+class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoggedIn : true,
-            current : 3,
+            isLoggedIn : false,
+            current : 1,
         }
         this.handleClick = this.handleClick.bind(this);
-        this.changeCurrent = this.changeCurrent.bind(this);
+        this.signup = this.signup.bind(this);
         this.loginSuccess = this.loginSuccess.bind(this);
         this.logout = this.logout.bind(this);
     }
@@ -41,29 +41,31 @@ class App extends Component {
         return;
     }
 
-    changeCurrent(i) {
+    signup(i) {
         var state = this.state;
-        state.current = i;
+        state.current = 3;
         this.setState(state);
     }
 
     render() {
-        if(this.state.current === 3) {
-            return(<Signup  />);
-        }
         var state = this.state;
-        if(this.state.current === 1 || this.state.isLoggedIn === false)
-            return(<Login  loginSuccess = {this.loginSuccess} />);
+
+        if(this.state.current === 3) {
+            return(<Signup  logout = {this.logout}/>);
+        }
+
+        if(this.state.current === 1)
+            return(<Login  loginSuccess = {this.loginSuccess} signup = {this.signup}/>);
+
 
         if(this.state.current === 2 && this.state.isLoggedIn === true)
-            return(<Home logout = {this.logout}/>);
+            return(<Home logout = {this.logout} />);
+
         else {
             state.current = 1;
             state.isLoggedIn = false;
             this.setState(state);
         }
-
-
     }
 }
 

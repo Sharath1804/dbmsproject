@@ -4,8 +4,8 @@ import CheckBoxes from './Checkboxes';
 
 
 class Signup extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			current : 1,
 			requestObject : {
@@ -19,12 +19,9 @@ class Signup extends React.Component {
 				allergies:'',
 				injuries:'',
 				foods:'',
-				workouts:'',
+				exercises:'',
 				supplements:'',
 				usernameStatus:'',
-				foods_values :[],
-				exercises_values :[],
-				supplements_values :[],
 			},
 			background : 'white'
 		};
@@ -43,6 +40,8 @@ class Signup extends React.Component {
 		this.addSupplement = this.addSupplement.bind(this);
 		this.removeSupplement = this.removeSupplement.bind(this);
 
+		this.handleFinalSubmit = this.handleFinalSubmit.bind(this);
+
 		this.allfoods = {
 
 		};
@@ -55,26 +54,118 @@ class Signup extends React.Component {
 		this.fprops = {};
 		this.eprops = {};
 		this.sprops = {};
+		this.food_values_temp = {};
+		this.exercises_values_temp = {};
+		this.supplements_values_temp = {};
 	}
 
 	addFood(v) {
 		console.log("Adding " + v);
+		this.food_values_temp[v.toString()] = v;
+		var x = Object.keys(this.food_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.food_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.foods = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
+		//console.log(this.food_values_temp);
 	}
 	addExercise(v) {
 		console.log("Adding " + v);
+		this.exercises_values_temp[v.toString()] = v;
+		var x = Object.keys(this.exercises_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.exercises_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.exercises = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
 	}
 	addSupplement(v) {
 		console.log("Adding " + v);
+		console.log("Adding " + v);
+		this.supplements_values_temp[v.toString()] = v;
+		var x = Object.keys(this.supplements_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.supplements_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.supplements = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
 
 	}
 	removeFood(v) {
 		console.log("Removing " + v);
+		delete this.food_values_temp[v];
+		var x = Object.keys(this.food_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.food_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.foods = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
 	}
 	removeExercise(v) {
 		console.log("Removing " + v);
+		console.log("Removing " + v);
+		delete this.exercises_values_temp[v];
+		var x = Object.keys(this.exercises_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.exercises_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.exercises = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
 	}
 	removeSupplement(v) {
 		console.log("Removing " + v);
+		console.log("Removing " + v);
+		console.log("Removing " + v);
+		delete this.supplements_values_temp[v];
+		var x = Object.keys(this.supplements_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.supplements_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.supplements = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
 	}
 
 	handleNext() {
@@ -188,6 +279,14 @@ getdata() {
 
 
 handleFinalSubmit() {
+	var baseurl = 'http://localhost:8000/gymapp2/signup/';
+	axios.post(baseurl, this.state.requestObject)
+	.then(function(response) {
+		console.log(response);
+	})
+	.catch(function(error) {
+		console.log(error);
+	});
 }
 
 handleInputChange(e) {
@@ -258,6 +357,7 @@ render() {
 		</p>
 		<p>
 		<button onClick={this.checkUsername}>Next</button>
+		<button onClick={this.props.logout}>Back</button>
 		</p>
 		</div>
 	)
@@ -315,13 +415,15 @@ render() {
 		<p>
 		<h1>Fourth Page.Verify data and submit.</h1>
 		</p>
-
+		<div>
+		<pre>{JSON.stringify(this.state.requestObject,null,2)}</pre>
+		</div>
 		<p>
 		<button onClick={this.handleBack}>Back</button>
 		</p>
 
 		<p>
-		<button onClick={this.handleSubmit}>Submit</button>
+		<button onClick={this.handleFinalSubmit}>Submit</button>
 		</p>
 		</div>
 	)

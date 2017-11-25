@@ -78,6 +78,7 @@ class Login extends React.Component {
             </div>
             <div>
             <button onClick={this.handleLogin}>Login</button>
+			<button onClick={this.props.signup}>Sign Up</button>
             </div>
 			</div>
         )

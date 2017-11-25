@@ -66,7 +66,7 @@ class CheckBoxes extends React.Component {
                 c=v.map(
                 (x) => <li>
                 NAME:{x.exercise_name}, EQUIPMENT:{x.equipment}
-                <input type='checkbox' name={x.name} onChange={this.handleCheckbox} />
+                <input type='checkbox' name={x.exercise_name} onChange={this.handleCheckbox} />
                 </li>
             );
         }
