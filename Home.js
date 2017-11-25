@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Edit from './Edit';
 
 axios.defaults.headers.common['Authorization'] = 'Token ' + localStorage.getItem('token');
 
@@ -55,6 +56,10 @@ class Home extends React.Component {
         }
         if(name === 'logout') {
             this.props.logout();
+        }
+        if(name === 'edit') {
+            state.current = 5;
+            this.setState(state);
         }
     }
 
@@ -129,6 +134,7 @@ class Home extends React.Component {
             axios.post(url, requestObject )
             .then(function(response) {
                 console.log(response.data);
+                this.workoutplan = response.data;
             }.bind(this))
             .catch(function(error){
                 console.log(error);
@@ -143,6 +149,7 @@ class Home extends React.Component {
             axios.post(url, requestObject )
             .then(function(response) {
                 console.log(response.data);
+                this.supplementplan = response.data;
             }.bind(this))
             .catch(function(error){
                 console.log(error);
@@ -151,34 +158,55 @@ class Home extends React.Component {
     }
 
     divComponent() {
-        if(this.state.current === 1)
+        if(this.state.current === 1) {
+            this.getData();
             return(
                 <div>
                 {this.state.current}
-                {this.getData()}
+                <pre>{JSON.stringify(this.info, null , 5)}</pre>
                 </div>
             )
-        if(this.state.current === 2)
+        }
+        if(this.state.current === 2) {
+            this.getData();
             return(
                 <div>
                 {this.state.current}
-                {this.getData()}
+                <pre>{JSON.stringify(this.dietplan, null, 5)}</pre>
                 </div>
             )
-        if(this.state.current === 3)
+        }
+        if(this.state.current === 3) {
+            this.getData();
             return(
                 <div>
                 {this.state.current}
-                {this.getData()}
+                <pre>{JSON.stringify(this.workoutplan, null, 5)}</pre>
                 </div>
             )
-        if(this.state.current === 4)
+        }
+        if(this.state.current === 4) {
+            this.getData()
             return(
                 <div>
                 {this.state.current}
-                {this.getData()}
+                <pre>{JSON.stringify(this.supplementplan, null, 5)}</pre>
                 </div>
             )
+        }
+        if(this.state.current === 5) {
+            var props = {
+                dietplan : this.dietplan,
+                workoutplan : this.workoutplan,
+                supplementplan : this.supplementplan,
+                info : this.info,
+                injuries : this.injuries,
+                allergies : this.allergies
+            }
+            return(
+                <Edit props={props} />
+            )
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Signup from './signuptest';
+import Signup from './Signup';
 import Login from './Login';
 import Home from './Home';
 
@@ -13,8 +13,8 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoggedIn : false,
-            current : 1,
+            isLoggedIn : true,
+            current : 3,
         }
         this.handleClick = this.handleClick.bind(this);
         this.changeCurrent = this.changeCurrent.bind(this);
@@ -48,6 +48,9 @@ class App extends Component {
     }
 
     render() {
+        if(this.state.current === 3) {
+            return(<Signup  />);
+        }
         var state = this.state;
         if(this.state.current === 1 || this.state.isLoggedIn === false)
             return(<Login  loginSuccess = {this.loginSuccess} />);
@@ -60,8 +63,7 @@ class App extends Component {
             this.setState(state);
         }
 
-        if(this.state.current === 3)
-            return(<Signup />);
+
     }
 }
 
