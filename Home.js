@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Edit from './Edit';
 
-axios.defaults.headers.common['Authorization'] = 'Token ' + localStorage.getItem('token');
+//axios.defaults.headers.common['Authorization'] = 'Token ' + localStorage.getItem('token');
 
 class Home extends React.Component {
     /*
@@ -26,6 +26,9 @@ class Home extends React.Component {
 
         }
         this.supplementplan = {
+
+        }
+        this.info = {
 
         }
         this.buttons = this.buttons.bind(this);
@@ -89,14 +92,19 @@ class Home extends React.Component {
     getData() {
         console.log('in getData');
         var baseurl = 'http://localhost:8000/gymapp2/'
-        var requestObject = {Authorization: 'Token ' + localStorage.getItem('token')};
-        if(this.state.current === 1) {
+        var requestObject = {};
+        var axiosInstance = axios.create({
+            headers:{Authorization:'Token ' + localStorage.getItem('token')}
+        });
+        if(this.state.current === 1 && Object.keys(this.info).length === 0) {
             //getinfo
             var url = baseurl + 'info/';
             console.log(url);
             console.log(requestObject);
-
-            axios.post(url, requestObject )
+            var axiosInstance = axios.create({
+                headers:{Authorization:'Token ' + localStorage.getItem('token')}
+            });
+            axiosInstance.post(url, {} )
             .then(function(response) {
                 console.log(response);
                 var state = this.state;
@@ -107,13 +115,13 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(this.state.current === 2) {
+        if(this.state.current === 2 && Object.keys(this.dietplan).length === 0) {
             //getdiet
             var url = baseurl + 'dietplan/';
             console.log(url);
             console.log(requestObject);
 
-            axios.post(url, requestObject )
+            axiosInstance.post(url, requestObject )
             .then(function(response) {
                 console.log(response);
                 var state = this.state;
@@ -125,13 +133,13 @@ class Home extends React.Component {
             })
             console.log('after axios');
         }
-        if(this.state.current === 3) {
+        if(this.state.current === 3 && Object.keys(this.workoutplan).length === 0) {
             //getworkouts
             var url = baseurl + 'workoutplan/';
             console.log(url);
             console.log(requestObject);
 
-            axios.post(url, requestObject )
+            axiosInstance.post(url, requestObject )
             .then(function(response) {
                 console.log(response.data);
                 this.workoutplan = response.data;
@@ -140,13 +148,13 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(this.state.current === 4 ) {
+        if(this.state.current === 4 && Object.keys(this.supplementplan).length === 0) {
             //getsupplements
             var url = baseurl + 'supplementplan/';
             console.log(url);
             console.log(requestObject);
 
-            axios.post(url, requestObject )
+            axiosInstance.post(url, requestObject )
             .then(function(response) {
                 console.log(response.data);
                 this.supplementplan = response.data;

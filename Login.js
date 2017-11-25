@@ -36,7 +36,10 @@ class Login extends React.Component {
 			username : this.state.username,
 			password : this.state.password
 		}
-		axios.post(loginurl, loginObject)
+		var axiosInstance = axios.create({
+			headers : {Authorization:null}
+		});
+		axiosInstance.post(loginurl, loginObject)
 		.then(function(response) {
 			console.log(response.data.token);
 			localStorage.setItem('token',response.data.token);
