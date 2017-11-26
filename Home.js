@@ -168,6 +168,7 @@ class Home extends React.Component {
     divComponent() {
         if(this.state.current === 1) {
             this.getData();
+            window.setTimeout(1000);
             return(
                 <div>
                 {this.state.current}

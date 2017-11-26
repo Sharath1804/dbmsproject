@@ -57,6 +57,8 @@ class Signup extends React.Component {
 		this.food_values_temp = {};
 		this.exercises_values_temp = {};
 		this.supplements_values_temp = {};
+		this.injuries_values_temp= {};
+		this.allergies_values_temp= {};
 	}
 
 	addFood(v) {
@@ -168,6 +170,35 @@ class Signup extends React.Component {
 		this.setState(state);
 	}
 
+	addInjury() {
+		console.log("Adding " + v);
+		this.injuries_values_temp[v.toString()] = v;
+		var x = Object.keys(this.injuries_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.injuries_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.injuries= final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+	}
+
+	removeInjury() {
+
+	}
+	addAllergy() {
+
+	}
+
+	removeAllergy() {
+
+	}
+
+
 	handleNext() {
 
 		var current = this.state.current;
@@ -261,6 +292,7 @@ getdata() {
 	.catch(function(error){
 		console.log('error');
 	});
+
 	axios.get(supplements)
 	.then(function(response){
 		this.allsupplements = response.data;
@@ -271,6 +303,14 @@ getdata() {
 		removeSupplement : this.removeSupplement
 		}
 		console.log(this.allsupplements);
+	}.bind(this))
+	.catch(function(error){
+		console.log('error');
+	});
+
+	axios.get(muscles)
+	.then(function(response){
+		this.allmuscles= response.data;
 	}.bind(this))
 	.catch(function(error){
 		console.log('error');
