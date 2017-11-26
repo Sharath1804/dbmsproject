@@ -1,0 +1,155 @@
+[
+  {
+    "id": 1,
+    "muscle_group_id": {
+      "id": 1,
+      "name": "biceps"
+    },
+    "exercise_name": "hammer curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": 2,
+    "muscle_group_id": {
+      "id": 1,
+      "name": "biceps"
+    },
+    "exercise_name": "barbell curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": 3,
+    "muscle_group_id": {
+      "id": 1,
+      "name": "biceps"
+    },
+    "exercise_name": "dumbbell curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": 4,
+    "muscle_group_id": {
+      "id": 1,
+      "name": "biceps"
+    },
+    "exercise_name": "machine curl",
+    "equipment": "machine"
+  },
+  {
+    "id": 5,
+    "muscle_group_id": {
+      "id": 1,
+      "name": "biceps"
+    },
+    "exercise_name": "pullups",
+    "equipment": "body"
+  },
+  {
+    "id": 6,
+    "muscle_group_id": {
+      "id": 2,
+      "name": "triceps"
+    },
+    "exercise_name": "barbell floor press",
+    "equipment": "barbell"
+  },
+  {
+    "id": 7,
+    "muscle_group_id": {
+      "id": 2,
+      "name": "triceps"
+    },
+    "exercise_name": "dips",
+    "equipment": "body"
+  },
+  {
+    "id": 8,
+    "muscle_group_id": {
+      "id": 2,
+      "name": "triceps"
+    },
+    "exercise_name": "triceps pushdown",
+    "equipment": "cable"
+  },
+  {
+    "id": 9,
+    "muscle_group_id": {
+      "id": 2,
+      "name": "triceps"
+    },
+    "exercise_name": "tricep extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": 10,
+    "muscle_group_id": {
+      "id": 3,
+      "name": "chest"
+    },
+    "exercise_name": "dumbbell bench press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": 11,
+    "muscle_group_id": {
+      "id": 3,
+      "name": "chest"
+    },
+    "exercise_name": "barbell bench press",
+    "equipment": "barbell"
+  },
+  {
+    "id": 12,
+    "muscle_group_id": {
+      "id": 3,
+      "name": "chest"
+    },
+    "exercise_name": "pushups",
+    "equipment": "body"
+  },
+  {
+    "id": 13,
+    "muscle_group_id": {
+      "id": 3,
+      "name": "chest"
+    },
+    "exercise_name": "dips",
+    "equipment": "body"
+  },
+  {
+    "id": 14,
+    "muscle_group_id": {
+      "id": 5,
+      "name": "back"
+    },
+    "exercise_name": "wrist rotation",
+    "equipment": "barbell"
+  },
+  {
+    "id": 15,
+    "muscle_group_id": {
+      "id": 4,
+      "name": "forearms"
+    },
+    "exercise_name": "deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": 16,
+    "muscle_group_id": {
+      "id": 4,
+      "name": "forearms"
+    },
+    "exercise_name": "pullups",
+    "equipment": "body"
+  },
+  {
+    "id": 17,
+    "muscle_group_id": {
+      "id": 4,
+      "name": "forearms"
+    },
+    "exercise_name": "pulldown",
+    "equipment": "cable"
+  }
+]
