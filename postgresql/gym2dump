@@ -1,0 +1,2374 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 9.6.5
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: remove_allergies_foods(); Type: FUNCTION; Schema: public; Owner: shishirdongre
+--
+
+CREATE FUNCTION remove_allergies_foods() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+begin
+DELETE 
+FROM dietplans
+WHERE food_id in (
+SELECT d.food_id
+     FROM dietplans d,
+          allergies a,
+          foods f
+     WHERE a.food_id IN
+         (SELECT f.id
+          FROM foods f
+          WHERE f.id = d.food_id
+            AND d.member_id=a.member_id)
+            )
+            AND
+      member_id IN
+    (
+       (SELECT d.member_id
+        FROM dietplans d,
+          allergies a,
+          foods f
+          WHERE f.id = d.food_id
+            AND d.member_id=a.member_id)
+     );
+end
+;
+$$;
+
+
+ALTER FUNCTION public.remove_allergies_foods() OWNER TO shishirdongre;
+
+--
+-- Name: remove_injuries_workouts(); Type: FUNCTION; Schema: public; Owner: shishirdongre
+--
+
+CREATE FUNCTION remove_injuries_workouts() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+begin
+DELETE
+FROM workoutplans
+WHERE exercise_id in (
+SELECT w.exercise_id
+     FROM workoutplans w,
+          injuries i,
+          exercises e
+     WHERE i.muscle_id IN
+         (SELECT e.muscle_group_id_id
+          FROM exercises e
+          WHERE e.id = w.exercise_id
+            AND w.member_id=i.member_id)
+            )
+            AND
+      member_id IN
+    (
+       (SELECT w.member_id
+        FROM workoutplans w,
+          injuries i,
+          exercises e
+          WHERE e.id = w.exercise_id
+            AND w.member_id=i.member_id)
+     );
+end
+;
+$$;
+
+
+ALTER FUNCTION public.remove_injuries_workouts() OWNER TO shishirdongre;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: allergies; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE allergies (
+    id integer NOT NULL,
+    food_id integer NOT NULL,
+    member_id integer NOT NULL
+);
+
+
+ALTER TABLE allergies OWNER TO dbmsproject;
+
+--
+-- Name: allergies_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE allergies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE allergies_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: allergies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE allergies_id_seq OWNED BY allergies.id;
+
+
+--
+-- Name: attendance; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE attendance (
+    id integer NOT NULL,
+    attended_date date NOT NULL,
+    time_in time without time zone NOT NULL,
+    time_out time without time zone NOT NULL,
+    member_id integer NOT NULL
+);
+
+
+ALTER TABLE attendance OWNER TO dbmsproject;
+
+--
+-- Name: attendance_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE attendance_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE attendance_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: attendance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE attendance_id_seq OWNED BY attendance.id;
+
+
+--
+-- Name: auth_group; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_group (
+    id integer NOT NULL,
+    name character varying(80) NOT NULL
+);
+
+
+ALTER TABLE auth_group OWNER TO dbmsproject;
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_group_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_group_id_seq OWNED BY auth_group.id;
+
+
+--
+-- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_group_permissions (
+    id integer NOT NULL,
+    group_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE auth_group_permissions OWNER TO dbmsproject;
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_group_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_group_permissions_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_group_permissions_id_seq OWNED BY auth_group_permissions.id;
+
+
+--
+-- Name: auth_permission; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_permission (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    content_type_id integer NOT NULL,
+    codename character varying(100) NOT NULL
+);
+
+
+ALTER TABLE auth_permission OWNER TO dbmsproject;
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_permission_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_permission_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
+
+
+--
+-- Name: auth_user; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_user (
+    id integer NOT NULL,
+    password character varying(128) NOT NULL,
+    last_login timestamp with time zone,
+    is_superuser boolean NOT NULL,
+    username character varying(150) NOT NULL,
+    first_name character varying(30) NOT NULL,
+    last_name character varying(30) NOT NULL,
+    email character varying(254) NOT NULL,
+    is_staff boolean NOT NULL,
+    is_active boolean NOT NULL,
+    date_joined timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE auth_user OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_groups; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_user_groups (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    group_id integer NOT NULL
+);
+
+
+ALTER TABLE auth_user_groups OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_user_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_user_groups_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_user_groups_id_seq OWNED BY auth_user_groups.id;
+
+
+--
+-- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_user_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_user_id_seq OWNED BY auth_user.id;
+
+
+--
+-- Name: auth_user_user_permissions; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE auth_user_user_permissions (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE auth_user_user_permissions OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE auth_user_user_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_user_user_permissions_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE auth_user_user_permissions_id_seq OWNED BY auth_user_user_permissions.id;
+
+
+--
+-- Name: authtoken_token; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE authtoken_token (
+    key character varying(40) NOT NULL,
+    created timestamp with time zone NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE authtoken_token OWNER TO dbmsproject;
+
+--
+-- Name: dietplans; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE dietplans (
+    id integer NOT NULL,
+    food_id integer NOT NULL,
+    member_id integer NOT NULL
+);
+
+
+ALTER TABLE dietplans OWNER TO dbmsproject;
+
+--
+-- Name: dietplans_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE dietplans_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dietplans_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: dietplans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE dietplans_id_seq OWNED BY dietplans.id;
+
+
+--
+-- Name: django_admin_log; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE django_admin_log (
+    id integer NOT NULL,
+    action_time timestamp with time zone NOT NULL,
+    object_id text,
+    object_repr character varying(200) NOT NULL,
+    action_flag smallint NOT NULL,
+    change_message text NOT NULL,
+    content_type_id integer,
+    user_id integer NOT NULL,
+    CONSTRAINT django_admin_log_action_flag_check CHECK ((action_flag >= 0))
+);
+
+
+ALTER TABLE django_admin_log OWNER TO dbmsproject;
+
+--
+-- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE django_admin_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE django_admin_log_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: django_admin_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
+
+
+--
+-- Name: django_content_type; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE django_content_type (
+    id integer NOT NULL,
+    app_label character varying(100) NOT NULL,
+    model character varying(100) NOT NULL
+);
+
+
+ALTER TABLE django_content_type OWNER TO dbmsproject;
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE django_content_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE django_content_type_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
+
+
+--
+-- Name: django_migrations; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE django_migrations (
+    id integer NOT NULL,
+    app character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    applied timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE django_migrations OWNER TO dbmsproject;
+
+--
+-- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE django_migrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE django_migrations_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: django_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE django_migrations_id_seq OWNED BY django_migrations.id;
+
+
+--
+-- Name: django_session; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE django_session (
+    session_key character varying(40) NOT NULL,
+    session_data text NOT NULL,
+    expire_date timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE django_session OWNER TO dbmsproject;
+
+--
+-- Name: dummytable; Type: TABLE; Schema: public; Owner: shishirdongre
+--
+
+CREATE TABLE dummytable (
+    id integer NOT NULL
+);
+
+
+ALTER TABLE dummytable OWNER TO shishirdongre;
+
+--
+-- Name: dummytable_id_seq; Type: SEQUENCE; Schema: public; Owner: shishirdongre
+--
+
+CREATE SEQUENCE dummytable_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dummytable_id_seq OWNER TO shishirdongre;
+
+--
+-- Name: dummytable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: shishirdongre
+--
+
+ALTER SEQUENCE dummytable_id_seq OWNED BY dummytable.id;
+
+
+--
+-- Name: exercises; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE exercises (
+    id integer NOT NULL,
+    exercise_name character varying(100),
+    equipment character varying(100),
+    muscle_group_id_id integer NOT NULL
+);
+
+
+ALTER TABLE exercises OWNER TO dbmsproject;
+
+--
+-- Name: exercises_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE exercises_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE exercises_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: exercises_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE exercises_id_seq OWNED BY exercises.id;
+
+
+--
+-- Name: fee; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE fee (
+    id integer NOT NULL,
+    payed_date date NOT NULL,
+    member_id integer NOT NULL
+);
+
+
+ALTER TABLE fee OWNER TO dbmsproject;
+
+--
+-- Name: fee_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE fee_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE fee_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: fee_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE fee_id_seq OWNED BY fee.id;
+
+
+--
+-- Name: foods; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE foods (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    food_type character varying(100)
+);
+
+
+ALTER TABLE foods OWNER TO dbmsproject;
+
+--
+-- Name: foods_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE foods_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE foods_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: foods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE foods_id_seq OWNED BY foods.id;
+
+
+--
+-- Name: injuries; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE injuries (
+    id integer NOT NULL,
+    member_id integer NOT NULL,
+    muscle_id integer NOT NULL
+);
+
+
+ALTER TABLE injuries OWNER TO dbmsproject;
+
+--
+-- Name: injuries_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE injuries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE injuries_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: injuries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE injuries_id_seq OWNED BY injuries.id;
+
+
+--
+-- Name: members; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE members (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    dob date NOT NULL,
+    sex character varying(100) NOT NULL,
+    phone character varying(100) NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE members OWNER TO dbmsproject;
+
+--
+-- Name: members_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE members_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE members_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE members_id_seq OWNED BY members.id;
+
+
+--
+-- Name: muscles; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE muscles (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE muscles OWNER TO dbmsproject;
+
+--
+-- Name: muscles_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE muscles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE muscles_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: muscles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE muscles_id_seq OWNED BY muscles.id;
+
+
+--
+-- Name: supplementplans; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE supplementplans (
+    id integer NOT NULL,
+    member_id integer NOT NULL,
+    supplement_id integer NOT NULL
+);
+
+
+ALTER TABLE supplementplans OWNER TO dbmsproject;
+
+--
+-- Name: supplementplans_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE supplementplans_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE supplementplans_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: supplementplans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE supplementplans_id_seq OWNED BY supplementplans.id;
+
+
+--
+-- Name: supplements; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE supplements (
+    id integer NOT NULL,
+    type character varying(100) NOT NULL,
+    name character varying(100) NOT NULL,
+    brand character varying(100) NOT NULL
+);
+
+
+ALTER TABLE supplements OWNER TO dbmsproject;
+
+--
+-- Name: supplements_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE supplements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE supplements_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: supplements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE supplements_id_seq OWNED BY supplements.id;
+
+
+--
+-- Name: workoutplans; Type: TABLE; Schema: public; Owner: dbmsproject
+--
+
+CREATE TABLE workoutplans (
+    id integer NOT NULL,
+    exercise_id integer NOT NULL,
+    member_id integer NOT NULL
+);
+
+
+ALTER TABLE workoutplans OWNER TO dbmsproject;
+
+--
+-- Name: workoutplans_id_seq; Type: SEQUENCE; Schema: public; Owner: dbmsproject
+--
+
+CREATE SEQUENCE workoutplans_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE workoutplans_id_seq OWNER TO dbmsproject;
+
+--
+-- Name: workoutplans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dbmsproject
+--
+
+ALTER SEQUENCE workoutplans_id_seq OWNED BY workoutplans.id;
+
+
+--
+-- Name: allergies id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY allergies ALTER COLUMN id SET DEFAULT nextval('allergies_id_seq'::regclass);
+
+
+--
+-- Name: attendance id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY attendance ALTER COLUMN id SET DEFAULT nextval('attendance_id_seq'::regclass);
+
+
+--
+-- Name: auth_group id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group ALTER COLUMN id SET DEFAULT nextval('auth_group_id_seq'::regclass);
+
+
+--
+-- Name: auth_group_permissions id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group_permissions ALTER COLUMN id SET DEFAULT nextval('auth_group_permissions_id_seq'::regclass);
+
+
+--
+-- Name: auth_permission id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_permission ALTER COLUMN id SET DEFAULT nextval('auth_permission_id_seq'::regclass);
+
+
+--
+-- Name: auth_user id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user ALTER COLUMN id SET DEFAULT nextval('auth_user_id_seq'::regclass);
+
+
+--
+-- Name: auth_user_groups id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_groups ALTER COLUMN id SET DEFAULT nextval('auth_user_groups_id_seq'::regclass);
+
+
+--
+-- Name: auth_user_user_permissions id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_user_permissions ALTER COLUMN id SET DEFAULT nextval('auth_user_user_permissions_id_seq'::regclass);
+
+
+--
+-- Name: dietplans id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY dietplans ALTER COLUMN id SET DEFAULT nextval('dietplans_id_seq'::regclass);
+
+
+--
+-- Name: django_admin_log id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_admin_log ALTER COLUMN id SET DEFAULT nextval('django_admin_log_id_seq'::regclass);
+
+
+--
+-- Name: django_content_type id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_content_type ALTER COLUMN id SET DEFAULT nextval('django_content_type_id_seq'::regclass);
+
+
+--
+-- Name: django_migrations id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_migrations ALTER COLUMN id SET DEFAULT nextval('django_migrations_id_seq'::regclass);
+
+
+--
+-- Name: dummytable id; Type: DEFAULT; Schema: public; Owner: shishirdongre
+--
+
+ALTER TABLE ONLY dummytable ALTER COLUMN id SET DEFAULT nextval('dummytable_id_seq'::regclass);
+
+
+--
+-- Name: exercises id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY exercises ALTER COLUMN id SET DEFAULT nextval('exercises_id_seq'::regclass);
+
+
+--
+-- Name: fee id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY fee ALTER COLUMN id SET DEFAULT nextval('fee_id_seq'::regclass);
+
+
+--
+-- Name: foods id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY foods ALTER COLUMN id SET DEFAULT nextval('foods_id_seq'::regclass);
+
+
+--
+-- Name: injuries id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY injuries ALTER COLUMN id SET DEFAULT nextval('injuries_id_seq'::regclass);
+
+
+--
+-- Name: members id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY members ALTER COLUMN id SET DEFAULT nextval('members_id_seq'::regclass);
+
+
+--
+-- Name: muscles id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY muscles ALTER COLUMN id SET DEFAULT nextval('muscles_id_seq'::regclass);
+
+
+--
+-- Name: supplementplans id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplementplans ALTER COLUMN id SET DEFAULT nextval('supplementplans_id_seq'::regclass);
+
+
+--
+-- Name: supplements id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplements ALTER COLUMN id SET DEFAULT nextval('supplements_id_seq'::regclass);
+
+
+--
+-- Name: workoutplans id; Type: DEFAULT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY workoutplans ALTER COLUMN id SET DEFAULT nextval('workoutplans_id_seq'::regclass);
+
+
+--
+-- Data for Name: allergies; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY allergies (id, food_id, member_id) FROM stdin;
+3	1	2
+4	20	2
+5	1	3
+6	20	3
+7	1	4
+8	20	4
+\.
+
+
+--
+-- Name: allergies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('allergies_id_seq', 8, true);
+
+
+--
+-- Data for Name: attendance; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY attendance (id, attended_date, time_in, time_out, member_id) FROM stdin;
+1	2017-02-15	14:30:00	13:00:00	2
+\.
+
+
+--
+-- Name: attendance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('attendance_id_seq', 1, true);
+
+
+--
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_group (id, name) FROM stdin;
+\.
+
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_group_id_seq', 1, false);
+
+
+--
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
+\.
+
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_group_permissions_id_seq', 1, false);
+
+
+--
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
+1	Can add log entry	1	add_logentry
+2	Can change log entry	1	change_logentry
+3	Can delete log entry	1	delete_logentry
+4	Can add permission	2	add_permission
+5	Can change permission	2	change_permission
+6	Can delete permission	2	delete_permission
+7	Can add group	3	add_group
+8	Can change group	3	change_group
+9	Can delete group	3	delete_group
+10	Can add user	4	add_user
+11	Can change user	4	change_user
+12	Can delete user	4	delete_user
+13	Can add content type	5	add_contenttype
+14	Can change content type	5	change_contenttype
+15	Can delete content type	5	delete_contenttype
+16	Can add session	6	add_session
+17	Can change session	6	change_session
+18	Can delete session	6	delete_session
+19	Can add Token	7	add_token
+20	Can change Token	7	change_token
+21	Can delete Token	7	delete_token
+22	Can add auth group	8	add_authgroup
+23	Can change auth group	8	change_authgroup
+24	Can delete auth group	8	delete_authgroup
+25	Can add auth group permissions	9	add_authgrouppermissions
+26	Can change auth group permissions	9	change_authgrouppermissions
+27	Can delete auth group permissions	9	delete_authgrouppermissions
+28	Can add auth permission	10	add_authpermission
+29	Can change auth permission	10	change_authpermission
+30	Can delete auth permission	10	delete_authpermission
+31	Can add authtoken token	11	add_authtokentoken
+32	Can change authtoken token	11	change_authtokentoken
+33	Can delete authtoken token	11	delete_authtokentoken
+34	Can add auth user	12	add_authuser
+35	Can change auth user	12	change_authuser
+36	Can delete auth user	12	delete_authuser
+37	Can add auth user groups	13	add_authusergroups
+38	Can change auth user groups	13	change_authusergroups
+39	Can delete auth user groups	13	delete_authusergroups
+40	Can add auth user user permissions	14	add_authuseruserpermissions
+41	Can change auth user user permissions	14	change_authuseruserpermissions
+42	Can delete auth user user permissions	14	delete_authuseruserpermissions
+43	Can add django admin log	15	add_djangoadminlog
+44	Can change django admin log	15	change_djangoadminlog
+45	Can delete django admin log	15	delete_djangoadminlog
+46	Can add django content type	16	add_djangocontenttype
+47	Can change django content type	16	change_djangocontenttype
+48	Can delete django content type	16	delete_djangocontenttype
+49	Can add django migrations	17	add_djangomigrations
+50	Can change django migrations	17	change_djangomigrations
+51	Can delete django migrations	17	delete_djangomigrations
+52	Can add django session	18	add_djangosession
+53	Can change django session	18	change_djangosession
+54	Can delete django session	18	delete_djangosession
+55	Can add allergies	19	add_allergies
+56	Can change allergies	19	change_allergies
+57	Can delete allergies	19	delete_allergies
+58	Can add attendance	20	add_attendance
+59	Can change attendance	20	change_attendance
+60	Can delete attendance	20	delete_attendance
+61	Can add dietplans	21	add_dietplans
+62	Can change dietplans	21	change_dietplans
+63	Can delete dietplans	21	delete_dietplans
+64	Can add exercises	22	add_exercises
+65	Can change exercises	22	change_exercises
+66	Can delete exercises	22	delete_exercises
+67	Can add fee	23	add_fee
+68	Can change fee	23	change_fee
+69	Can delete fee	23	delete_fee
+70	Can add foods	24	add_foods
+71	Can change foods	24	change_foods
+72	Can delete foods	24	delete_foods
+73	Can add injuries	25	add_injuries
+74	Can change injuries	25	change_injuries
+75	Can delete injuries	25	delete_injuries
+76	Can add members	26	add_members
+77	Can change members	26	change_members
+78	Can delete members	26	delete_members
+79	Can add muscles	27	add_muscles
+80	Can change muscles	27	change_muscles
+81	Can delete muscles	27	delete_muscles
+82	Can add supplementplans	28	add_supplementplans
+83	Can change supplementplans	28	change_supplementplans
+84	Can delete supplementplans	28	delete_supplementplans
+85	Can add supplements	29	add_supplements
+86	Can change supplements	29	change_supplements
+87	Can delete supplements	29	delete_supplements
+88	Can add workoutplans	30	add_workoutplans
+89	Can change workoutplans	30	change_workoutplans
+90	Can delete workoutplans	30	delete_workoutplans
+\.
+
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_permission_id_seq', 90, true);
+
+
+--
+-- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
+2	pbkdf2_sha256$36000$ejqD0lQmbGY7$5M9hXY8UtcxAWm+4R9ZiH17oo9NaoSCIGmmvx8PlLus=	\N	t	shishirdongre			email@email.com	t	t	2017-11-24 04:22:43.4668+00
+3	pbkdf2_sha256$36000$JMBPN13mlCNh$40i5LQduurVE7C7ryp5HjQlsoQyfcYxhNyY7DLvdWVY=	\N	f	test			test	f	t	2017-11-24 04:29:44.060203+00
+4	pbkdf2_sha256$36000$4MNOdKo2zqoU$9PR/v//kDJ8XB5UjGzL+AYhDtTS73lomVm+952SwOFg=	\N	f	dwight			dwight@email.com	f	t	2017-11-25 15:29:42.870956+00
+5	pbkdf2_sha256$36000$v5aIPg6cjon2$IhuQMRbrX1upVxg+HRHtw3soviILSatyMGqpoXAlQK4=	\N	f	jim			jim@email.com	f	t	2017-11-25 16:33:54.720093+00
+11	pbkdf2_sha256$36000$OTHk11s93FTO$ffiLp8lj0yGwnlV0fJs2SmspHPn5Xn+L/noBe9Wvsi8=	\N	f	michaelscott			michael@email.com	f	t	2017-11-25 17:08:30.512528+00
+\.
+
+
+--
+-- Data for Name: auth_user_groups; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_user_groups (id, user_id, group_id) FROM stdin;
+\.
+
+
+--
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_user_groups_id_seq', 1, false);
+
+
+--
+-- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_user_id_seq', 11, true);
+
+
+--
+-- Data for Name: auth_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
+\.
+
+
+--
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('auth_user_user_permissions_id_seq', 1, false);
+
+
+--
+-- Data for Name: authtoken_token; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY authtoken_token (key, created, user_id) FROM stdin;
+12403ba10033e89d00beb2a5fd735e35fb710bc2	2017-11-24 04:22:43.604133+00	2
+d6c53f6d496b13fd08c3f80503eff12df5a24717	2017-11-24 04:29:44.195415+00	3
+02e0030b9d78d8725013f1c71efe93dd50408d9d	2017-11-25 15:29:43.177923+00	4
+29e706dc3a97fb1c25bf0d6cc651e50ff10d2830	2017-11-25 16:33:54.81338+00	5
+3a1466cc745a684942786f403e1595e21248e6f9	2017-11-25 17:08:30.604553+00	11
+\.
+
+
+--
+-- Data for Name: dietplans; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY dietplans (id, food_id, member_id) FROM stdin;
+3	37	2
+4	7	2
+5	37	3
+6	7	3
+7	37	4
+8	7	4
+21	1	8
+22	9	8
+23	17	8
+24	39	8
+25	20	8
+27	1	2
+\.
+
+
+--
+-- Name: dietplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('dietplans_id_seq', 27, true);
+
+
+--
+-- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY django_admin_log (id, action_time, object_id, object_repr, action_flag, change_message, content_type_id, user_id) FROM stdin;
+\.
+
+
+--
+-- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('django_admin_log_id_seq', 1, false);
+
+
+--
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY django_content_type (id, app_label, model) FROM stdin;
+1	admin	logentry
+2	auth	permission
+3	auth	group
+4	auth	user
+5	contenttypes	contenttype
+6	sessions	session
+7	authtoken	token
+8	gymapp2	authgroup
+9	gymapp2	authgrouppermissions
+10	gymapp2	authpermission
+11	gymapp2	authtokentoken
+12	gymapp2	authuser
+13	gymapp2	authusergroups
+14	gymapp2	authuseruserpermissions
+15	gymapp2	djangoadminlog
+16	gymapp2	djangocontenttype
+17	gymapp2	djangomigrations
+18	gymapp2	djangosession
+19	gymapp2	allergies
+20	gymapp2	attendance
+21	gymapp2	dietplans
+22	gymapp2	exercises
+23	gymapp2	fee
+24	gymapp2	foods
+25	gymapp2	injuries
+26	gymapp2	members
+27	gymapp2	muscles
+28	gymapp2	supplementplans
+29	gymapp2	supplements
+30	gymapp2	workoutplans
+\.
+
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('django_content_type_id_seq', 30, true);
+
+
+--
+-- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY django_migrations (id, app, name, applied) FROM stdin;
+1	contenttypes	0001_initial	2017-11-24 03:58:08.87348+00
+2	auth	0001_initial	2017-11-24 03:58:09.978978+00
+3	admin	0001_initial	2017-11-24 03:58:10.288718+00
+4	admin	0002_logentry_remove_auto_add	2017-11-24 03:58:10.355619+00
+5	contenttypes	0002_remove_content_type_name	2017-11-24 03:58:10.443464+00
+6	auth	0002_alter_permission_name_max_length	2017-11-24 03:58:10.477579+00
+7	auth	0003_alter_user_email_max_length	2017-11-24 03:58:10.53331+00
+8	auth	0004_alter_user_username_opts	2017-11-24 03:58:10.575233+00
+9	auth	0005_alter_user_last_login_null	2017-11-24 03:58:10.622426+00
+10	auth	0006_require_contenttypes_0002	2017-11-24 03:58:10.634509+00
+11	auth	0007_alter_validators_add_error_messages	2017-11-24 03:58:10.674598+00
+12	auth	0008_alter_user_username_max_length	2017-11-24 03:58:10.777074+00
+13	authtoken	0001_initial	2017-11-24 03:58:10.945125+00
+14	authtoken	0002_auto_20160226_1747	2017-11-24 03:58:11.111496+00
+15	gymapp2	0001_initial	2017-11-24 03:58:13.640121+00
+16	sessions	0001_initial	2017-11-24 03:58:13.838974+00
+\.
+
+
+--
+-- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('django_migrations_id_seq', 16, true);
+
+
+--
+-- Data for Name: django_session; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY django_session (session_key, session_data, expire_date) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dummytable; Type: TABLE DATA; Schema: public; Owner: shishirdongre
+--
+
+COPY dummytable (id) FROM stdin;
+1
+2
+3
+\.
+
+
+--
+-- Name: dummytable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: shishirdongre
+--
+
+SELECT pg_catalog.setval('dummytable_id_seq', 3, true);
+
+
+--
+-- Data for Name: exercises; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY exercises (id, exercise_name, equipment, muscle_group_id_id) FROM stdin;
+1	hammer curl	dumbbell	1
+2	barbell curl	barbell	1
+3	dumbbell curl	dumbbell	1
+4	machine curl	machine	1
+5	pullups	body	1
+6	barbell floor press	barbell	2
+8	triceps pushdown	cable	2
+9	tricep extension	dumbbell	2
+10	dumbbell bench press	dumbbell	3
+11	barbell bench press	barbell	3
+12	pushups	body	3
+13	dips	body	3
+14	wrist rotation	barbell	5
+15	deadlift	barbell	4
+16	pullups	body	4
+17	pulldown	cable	4
+\.
+
+
+--
+-- Name: exercises_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('exercises_id_seq', 1, false);
+
+
+--
+-- Data for Name: fee; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY fee (id, payed_date, member_id) FROM stdin;
+\.
+
+
+--
+-- Name: fee_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('fee_id_seq', 1, false);
+
+
+--
+-- Data for Name: foods; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY foods (id, name, food_type) FROM stdin;
+1	cheese	dairy
+2	cottage cheese	dairy
+3	butter	dairy
+4	ghee	dairy
+5	milk	dairy
+6	banana	fruits
+7	apple	fruits
+8	orange	fruits
+9	watermelon	fruits
+10	grape	fruits
+11	papaya	fruits
+12	mango	fruits
+13	guava	fruits
+14	potato	vegetables
+15	bean	vegetables
+16	cabbage	vegetables
+17	tomato	vegetables
+18	pepper	vegetables
+19	onion	vegetables
+20	chicken	meat
+21	goat	meat
+22	veal	meat
+23	duck	meat
+24	turkey	meat
+25	pork	meat
+26	salmon	fish
+27	tuna	fish
+28	oyster	fish
+29	scallop	fish
+30	cod	fish
+31	prawns	fish
+32	omelet	egg
+33	scrambled eggs	egg
+34	boiled egg	egg
+35	raw egg	egg
+36	cashew	nuts
+37	almond	nuts
+38	walnut	nuts
+39	pistachio	nuts
+40	hazelnut	nuts
+41	peanuts	nuts
+\.
+
+
+--
+-- Name: foods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('foods_id_seq', 1, false);
+
+
+--
+-- Data for Name: injuries; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY injuries (id, member_id, muscle_id) FROM stdin;
+2	2	3
+3	3	3
+4	4	3
+5	4	1
+\.
+
+
+--
+-- Name: injuries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('injuries_id_seq', 5, true);
+
+
+--
+-- Data for Name: members; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY members (id, name, dob, sex, phone, user_id) FROM stdin;
+2	test	2017-05-05	male	999	3
+3	dwight	2017-05-05	male	991	4
+4	jim	2017-05-05	male	9090909	5
+8	Michael	1980-01-01	male	999	11
+\.
+
+
+--
+-- Name: members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('members_id_seq', 8, true);
+
+
+--
+-- Data for Name: muscles; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY muscles (id, name) FROM stdin;
+1	biceps
+2	triceps
+3	chest
+4	forearms
+5	back
+\.
+
+
+--
+-- Name: muscles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('muscles_id_seq', 1, false);
+
+
+--
+-- Data for Name: supplementplans; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY supplementplans (id, member_id, supplement_id) FROM stdin;
+3	2	1
+4	2	2
+5	3	1
+6	3	2
+7	4	1
+8	4	2
+9	8	2
+10	8	3
+11	8	4
+\.
+
+
+--
+-- Name: supplementplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('supplementplans_id_seq', 11, true);
+
+
+--
+-- Data for Name: supplements; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY supplements (id, type, name, brand) FROM stdin;
+1	test1	test1	test1
+2	test2	test2	test2
+3	test3	test3	test3
+4	test4	test4	test4
+5	test5	test5	test5
+6	test6	test6	test6
+7	test7	test7	test7
+\.
+
+
+--
+-- Name: supplements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('supplements_id_seq', 1, false);
+
+
+--
+-- Data for Name: workoutplans; Type: TABLE DATA; Schema: public; Owner: dbmsproject
+--
+
+COPY workoutplans (id, exercise_id, member_id) FROM stdin;
+9	4	8
+21	14	4
+\.
+
+
+--
+-- Name: workoutplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
+--
+
+SELECT pg_catalog.setval('workoutplans_id_seq', 25, true);
+
+
+--
+-- Name: allergies allergies_member_id_food_id_2381814c_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY allergies
+    ADD CONSTRAINT allergies_member_id_food_id_2381814c_uniq UNIQUE (member_id, food_id);
+
+
+--
+-- Name: allergies allergies_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY allergies
+    ADD CONSTRAINT allergies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: attendance attendance_member_id_attended_date__a5ce869e_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY attendance
+    ADD CONSTRAINT attendance_member_id_attended_date__a5ce869e_uniq UNIQUE (member_id, attended_date, time_in, time_out);
+
+
+--
+-- Name: attendance attendance_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY attendance
+    ADD CONSTRAINT attendance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_group auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_name_key UNIQUE (name);
+
+
+--
+-- Name: auth_group_permissions auth_group_permissions_group_id_permission_id_0cd325b0_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_permission_id_0cd325b0_uniq UNIQUE (group_id, permission_id);
+
+
+--
+-- Name: auth_group_permissions auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_group auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_permission auth_permission_content_type_id_codename_01ab375a_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_codename_01ab375a_uniq UNIQUE (content_type_id, codename);
+
+
+--
+-- Name: auth_permission auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_groups auth_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_groups auth_user_groups_user_id_group_id_94350c0c_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_group_id_94350c0c_uniq UNIQUE (user_id, group_id);
+
+
+--
+-- Name: auth_user auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user
+    ADD CONSTRAINT auth_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_user_permissions auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_permission_id_14a6b632_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_permission_id_14a6b632_uniq UNIQUE (user_id, permission_id);
+
+
+--
+-- Name: auth_user auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user
+    ADD CONSTRAINT auth_user_username_key UNIQUE (username);
+
+
+--
+-- Name: authtoken_token authtoken_token_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT authtoken_token_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: authtoken_token authtoken_token_user_id_key; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT authtoken_token_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: dietplans dietplans_member_id_food_id_e51550a5_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY dietplans
+    ADD CONSTRAINT dietplans_member_id_food_id_e51550a5_uniq UNIQUE (member_id, food_id);
+
+
+--
+-- Name: dietplans dietplans_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY dietplans
+    ADD CONSTRAINT dietplans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_admin_log django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_content_type django_content_type_app_label_model_76bd3d3b_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_app_label_model_76bd3d3b_uniq UNIQUE (app_label, model);
+
+
+--
+-- Name: django_content_type django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_migrations django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_migrations
+    ADD CONSTRAINT django_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_session django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_session
+    ADD CONSTRAINT django_session_pkey PRIMARY KEY (session_key);
+
+
+--
+-- Name: dummytable dummytable_pkey; Type: CONSTRAINT; Schema: public; Owner: shishirdongre
+--
+
+ALTER TABLE ONLY dummytable
+    ADD CONSTRAINT dummytable_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exercises exercises_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY exercises
+    ADD CONSTRAINT exercises_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fee fee_member_id_payed_date_1f3b23e0_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY fee
+    ADD CONSTRAINT fee_member_id_payed_date_1f3b23e0_uniq UNIQUE (member_id, payed_date);
+
+
+--
+-- Name: fee fee_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY fee
+    ADD CONSTRAINT fee_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foods foods_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY foods
+    ADD CONSTRAINT foods_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: injuries injuries_member_id_muscle_id_05c7cc9d_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY injuries
+    ADD CONSTRAINT injuries_member_id_muscle_id_05c7cc9d_uniq UNIQUE (member_id, muscle_id);
+
+
+--
+-- Name: injuries injuries_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY injuries
+    ADD CONSTRAINT injuries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: members members_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY members
+    ADD CONSTRAINT members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: members members_user_id_key; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY members
+    ADD CONSTRAINT members_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: muscles muscles_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY muscles
+    ADD CONSTRAINT muscles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supplementplans supplementplans_member_id_supplement_id_26aa7608_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplementplans
+    ADD CONSTRAINT supplementplans_member_id_supplement_id_26aa7608_uniq UNIQUE (member_id, supplement_id);
+
+
+--
+-- Name: supplementplans supplementplans_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplementplans
+    ADD CONSTRAINT supplementplans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supplements supplements_name_type_brand_90b59e5d_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplements
+    ADD CONSTRAINT supplements_name_type_brand_90b59e5d_uniq UNIQUE (name, type, brand);
+
+
+--
+-- Name: supplements supplements_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplements
+    ADD CONSTRAINT supplements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workoutplans workoutplans_member_id_exercise_id_43616b1b_uniq; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY workoutplans
+    ADD CONSTRAINT workoutplans_member_id_exercise_id_43616b1b_uniq UNIQUE (member_id, exercise_id);
+
+
+--
+-- Name: workoutplans workoutplans_pkey; Type: CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY workoutplans
+    ADD CONSTRAINT workoutplans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: allergies_food_id_af28d85c; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX allergies_food_id_af28d85c ON allergies USING btree (food_id);
+
+
+--
+-- Name: allergies_member_id_a65e0d13; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX allergies_member_id_a65e0d13 ON allergies USING btree (member_id);
+
+
+--
+-- Name: attendance_member_id_f0ccf75a; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX attendance_member_id_f0ccf75a ON attendance USING btree (member_id);
+
+
+--
+-- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_group_name_a6ea08ec_like ON auth_group USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: auth_group_permissions_group_id_b120cbf9; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_group_permissions_group_id_b120cbf9 ON auth_group_permissions USING btree (group_id);
+
+
+--
+-- Name: auth_group_permissions_permission_id_84c5c92e; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_group_permissions_permission_id_84c5c92e ON auth_group_permissions USING btree (permission_id);
+
+
+--
+-- Name: auth_permission_content_type_id_2f476e4b; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_permission_content_type_id_2f476e4b ON auth_permission USING btree (content_type_id);
+
+
+--
+-- Name: auth_user_groups_group_id_97559544; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_user_groups_group_id_97559544 ON auth_user_groups USING btree (group_id);
+
+
+--
+-- Name: auth_user_groups_user_id_6a12ed8b; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_user_groups_user_id_6a12ed8b ON auth_user_groups USING btree (user_id);
+
+
+--
+-- Name: auth_user_user_permissions_permission_id_1fbb5f2c; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_user_user_permissions_permission_id_1fbb5f2c ON auth_user_user_permissions USING btree (permission_id);
+
+
+--
+-- Name: auth_user_user_permissions_user_id_a95ead1b; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_user_user_permissions_user_id_a95ead1b ON auth_user_user_permissions USING btree (user_id);
+
+
+--
+-- Name: auth_user_username_6821ab7c_like; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX auth_user_username_6821ab7c_like ON auth_user USING btree (username varchar_pattern_ops);
+
+
+--
+-- Name: authtoken_token_key_10f0b77e_like; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX authtoken_token_key_10f0b77e_like ON authtoken_token USING btree (key varchar_pattern_ops);
+
+
+--
+-- Name: dietplans_food_id_33dca311; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX dietplans_food_id_33dca311 ON dietplans USING btree (food_id);
+
+
+--
+-- Name: dietplans_member_id_a07e0964; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX dietplans_member_id_a07e0964 ON dietplans USING btree (member_id);
+
+
+--
+-- Name: django_admin_log_content_type_id_c4bce8eb; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX django_admin_log_content_type_id_c4bce8eb ON django_admin_log USING btree (content_type_id);
+
+
+--
+-- Name: django_admin_log_user_id_c564eba6; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX django_admin_log_user_id_c564eba6 ON django_admin_log USING btree (user_id);
+
+
+--
+-- Name: django_session_expire_date_a5c62663; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX django_session_expire_date_a5c62663 ON django_session USING btree (expire_date);
+
+
+--
+-- Name: django_session_session_key_c0390e0f_like; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX django_session_session_key_c0390e0f_like ON django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- Name: exercises_muscle_group_id_id_4310af37; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX exercises_muscle_group_id_id_4310af37 ON exercises USING btree (muscle_group_id_id);
+
+
+--
+-- Name: fee_member_id_35940e2a; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX fee_member_id_35940e2a ON fee USING btree (member_id);
+
+
+--
+-- Name: injuries_member_id_fa88fe0f; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX injuries_member_id_fa88fe0f ON injuries USING btree (member_id);
+
+
+--
+-- Name: injuries_muscle_id_4bd1c1b0; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX injuries_muscle_id_4bd1c1b0 ON injuries USING btree (muscle_id);
+
+
+--
+-- Name: supplementplans_member_id_910069b5; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX supplementplans_member_id_910069b5 ON supplementplans USING btree (member_id);
+
+
+--
+-- Name: supplementplans_supplement_id_834d1537; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX supplementplans_supplement_id_834d1537 ON supplementplans USING btree (supplement_id);
+
+
+--
+-- Name: workoutplans_exercise_id_c345d507; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX workoutplans_exercise_id_c345d507 ON workoutplans USING btree (exercise_id);
+
+
+--
+-- Name: workoutplans_member_id_1fd94a5a; Type: INDEX; Schema: public; Owner: dbmsproject
+--
+
+CREATE INDEX workoutplans_member_id_1fd94a5a ON workoutplans USING btree (member_id);
+
+
+--
+-- Name: allergies allergies_food_id_af28d85c_fk_foods_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY allergies
+    ADD CONSTRAINT allergies_food_id_af28d85c_fk_foods_id FOREIGN KEY (food_id) REFERENCES foods(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: allergies allergies_member_id_a65e0d13_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY allergies
+    ADD CONSTRAINT allergies_member_id_a65e0d13_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: attendance attendance_member_id_f0ccf75a_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY attendance
+    ADD CONSTRAINT attendance_member_id_f0ccf75a_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_group_permissions auth_group_permissio_permission_id_84c5c92e_fk_auth_perm; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissio_permission_id_84c5c92e_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_group_permissions auth_group_permissions_group_id_b120cbf9_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_b120cbf9_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_permission auth_permission_content_type_id_2f476e4b_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_2f476e4b_fk_django_co FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_groups auth_user_groups_group_id_97559544_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_group_id_97559544_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_groups auth_user_groups_user_id_6a12ed8b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_6a12ed8b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_user_permissions auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: authtoken_token authtoken_token_user_id_35299eff_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT authtoken_token_user_id_35299eff_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dietplans dietplans_food_id_33dca311_fk_foods_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY dietplans
+    ADD CONSTRAINT dietplans_food_id_33dca311_fk_foods_id FOREIGN KEY (food_id) REFERENCES foods(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dietplans dietplans_member_id_a07e0964_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY dietplans
+    ADD CONSTRAINT dietplans_member_id_a07e0964_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: django_admin_log django_admin_log_content_type_id_c4bce8eb_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_content_type_id_c4bce8eb_fk_django_co FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: django_admin_log django_admin_log_user_id_c564eba6_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_user_id_c564eba6_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: exercises exercises_muscle_group_id_id_4310af37_fk_muscles_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY exercises
+    ADD CONSTRAINT exercises_muscle_group_id_id_4310af37_fk_muscles_id FOREIGN KEY (muscle_group_id_id) REFERENCES muscles(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: fee fee_member_id_35940e2a_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY fee
+    ADD CONSTRAINT fee_member_id_35940e2a_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: injuries injuries_member_id_fa88fe0f_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY injuries
+    ADD CONSTRAINT injuries_member_id_fa88fe0f_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: injuries injuries_muscle_id_4bd1c1b0_fk_muscles_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY injuries
+    ADD CONSTRAINT injuries_muscle_id_4bd1c1b0_fk_muscles_id FOREIGN KEY (muscle_id) REFERENCES muscles(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: members members_user_id_b0386d8e_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY members
+    ADD CONSTRAINT members_user_id_b0386d8e_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: supplementplans supplementplans_member_id_910069b5_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplementplans
+    ADD CONSTRAINT supplementplans_member_id_910069b5_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: supplementplans supplementplans_supplement_id_834d1537_fk_supplements_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY supplementplans
+    ADD CONSTRAINT supplementplans_supplement_id_834d1537_fk_supplements_id FOREIGN KEY (supplement_id) REFERENCES supplements(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: workoutplans workoutplans_exercise_id_c345d507_fk_exercises_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY workoutplans
+    ADD CONSTRAINT workoutplans_exercise_id_c345d507_fk_exercises_id FOREIGN KEY (exercise_id) REFERENCES exercises(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: workoutplans workoutplans_member_id_1fd94a5a_fk_members_id; Type: FK CONSTRAINT; Schema: public; Owner: dbmsproject
+--
+
+ALTER TABLE ONLY workoutplans
+    ADD CONSTRAINT workoutplans_member_id_1fd94a5a_fk_members_id FOREIGN KEY (member_id) REFERENCES members(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
