@@ -1,5 +1,5 @@
 create function remove_injuries_workouts ()  
-returns void as $$
+returns trigger as $$
 begin
 DELETE
 FROM workoutplans
@@ -30,7 +30,7 @@ $$ LANGUAGE plpgsql;
 
 
 create function remove_allergies_foods ()  
-returns void as $$
+returns trigger as $$
 begin
 DELETE 
 FROM dietplans
