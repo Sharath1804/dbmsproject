@@ -119,59 +119,68 @@ def update_details(request):
     a = AuthUser.objects.get(username=request.user.username)
     m = a.members
 
-    for food in foods:
-        try:
-            d = Dietplans(
-                member=m,
-                food=Foods.objects.get(name=food)
-            )
-            d.save()
+    Dietplans.objects.all().filter(member_id=m.id).delete()
+    Workoutplans.objects.all().filter(member_id=m.id).delete()
+    Supplementplans.objects.all().filter(member_id=m.id).delete()
+    Allergies.objects.all().filter(member_id=m.id).delete()
+    Injuries.objects.all().filter(member_id=m.id).delete()
 
-        except IntegrityError:
-            pass
-    for exercise in exercises:
-        try:
-            e = Workoutplans(
-                member=m,
-                exercise=Exercises.objects.get(exercise_name=exercise)
-
-            )
-            e.save()
-        except IntegrityError:
-            pass
-
-    for supplement in supplements:
-        try:
-            s = Supplementplans(
-                member=m,
-                supplement=Supplements.objects.get(name=supplement)
-            )
-            s.save()
-        except IntegrityError:
-            pass
-
-    for allergy in allergies:
-        try:
-            if (len(allergy) > 2):
-                a = Allergies(
+    if len(foods) > 2:
+        for food in foods:
+            try:
+                d = Dietplans(
                     member=m,
-                    food=Foods.objects.get(name=allergy)
+                    food=Foods.objects.get(name=food)
+                )
+                d.save()
+
+            except IntegrityError:
+                pass
+    if len(exercises) > 2:
+        for exercise in exercises:
+            try:
+                e = Workoutplans(
+                    member=m,
+                    exercise=Exercises.objects.get(exercise_name=exercise)
 
                 )
-                a.save()
-        except IntegrityError:
-            pass
-
-    for injury in injuries:
-        try:
-            if (len(injury) > 2):
-                i = Injuries(
+                e.save()
+            except IntegrityError:
+                pass
+    if len(supplements) > 2:
+        for supplement in supplements:
+            try:
+                s = Supplementplans(
                     member=m,
-                    muscle=Muscles.objects.get(name=injury)
+                    supplement=Supplements.objects.get(name=supplement)
                 )
-                i.save()
-        except IntegrityError:
-            pass
+                s.save()
+            except IntegrityError:
+                pass
+    if len(allergies) > 2:
+        for allergy in allergies:
+            try:
+                if (len(allergy) > 2):
+                    a = Allergies(
+                        member=m,
+                        food=Foods.objects.get(name=allergy)
+
+                    )
+                    a.save()
+            except IntegrityError:
+                pass
+    if len(injuries) > 2:
+        for injury in injuries:
+            try:
+                if (len(injury) > 2):
+                    i = Injuries(
+                        member=m,
+                        muscle=Muscles.objects.get(name=injury)
+                    )
+                    i.save()
+            except IntegrityError:
+                pass
+
     return Response(status.HTTP_202_ACCEPTED)
 
 
