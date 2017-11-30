@@ -22,6 +22,7 @@ class Signup extends React.Component {
 				exercises:'',
 				supplements:'',
 				usernameStatus:'',
+				submiterror : false,
 			},
 			background : 'white'
 		};
@@ -30,6 +31,9 @@ class Signup extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.checkUsername = this.checkUsername.bind(this);
 		this.getdata = this.getdata.bind(this);
+		this.submiterror = this.submitError.bind(this);
+
+		this.handleFinalSubmit = this.handleFinalSubmit.bind(this);
 
 		this.addFood = this.addFood.bind(this);
 		this.removeFood = this.removeFood.bind(this);
@@ -46,7 +50,6 @@ class Signup extends React.Component {
 		this.addAllergy = this.addAllergy.bind(this);
 		this.removeAllergy = this.removeAllergy.bind(this);
 
-		this.handleFinalSubmit = this.handleFinalSubmit.bind(this);
 
 		this.allfoods = {
 
@@ -193,7 +196,7 @@ class Signup extends React.Component {
 		final = final.replace(/,*$/,'');
 		var state = this.state;
 		state.requestObject.injuries= final;
-		this.setState = state;
+		this.setState(state);
 		console.log("Request Object" );
 		console.log(this.state.requestObject);
 	}
@@ -211,7 +214,7 @@ class Signup extends React.Component {
 		final = final.replace(/,*$/,'');
 		var state = this.state;
 		state.requestObject.injuries= final;
-		this.setState = state;
+		this.setState(state);
 		console.log("Request Object" );
 		console.log(this.state.requestObject);
 
@@ -380,10 +383,14 @@ handleFinalSubmit() {
 	axios.post(baseurl, this.state.requestObject)
 	.then(function(response) {
 		console.log(response);
-	})
+		this.props.logout();
+	}.bind(this))
 	.catch(function(error) {
 		console.log(error);
-	});
+		var state = this.state;
+		state.submiterror = true;
+		this.setState(state);
+	}.bind(this));
 }
 
 handleInputChange(e) {
@@ -428,6 +435,23 @@ handleBack() {
 	this.setState({
 		current : currentUpdated
 	});
+}
+
+submitError() {
+	if(this.state.submiterror) {
+		var style = {
+				background : this.state.background,
+				margin : '10px',
+				height : '30px',
+				'text-align' : 'center',
+				'font-size' : '1.5em'
+			};
+		return (
+			<div style={style}>
+			Submit Error
+			</div>
+		);
+	}
 }
 
 
@@ -520,6 +544,7 @@ render() {
 			<h1>Select Injuries</h1>
 			<CheckBoxes current = {5} values = {this.allmuscles.slice()} addInjury = {this.addInjury} removeInjury = {this.removeInjury} />
 			</div>
+
 			<button onClick={this.handleBack}>Back</button>
 			<p>
 			<button onClick={this.handleNext}>Next</button>
@@ -530,6 +555,9 @@ render() {
 	if(this.state.current === 5)
 	return (
 		<div>
+		<div>
+		{this.submitError()}
+		</div>
 		<p>
 		<h1>Fourth Page.Verify data and submit.</h1>
 		</p>

@@ -43,6 +43,26 @@ class CheckBoxes extends React.Component {
                 this.props.removeSupplement(e.target.name);
             }
         }
+        if(this.props.current === 4) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addAllergy(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeAllergy(e.target.name);
+            }
+        }
+        if(this.props.current === 5) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
 
     }
 
@@ -75,6 +95,22 @@ class CheckBoxes extends React.Component {
                 c=this.props.values.map(
                 (x) => <li>
                 NAME:{x.name}, TYPE:{x.type}
+                <input type='checkbox' name={x.name} onChange={this.handleCheckbox} />
+                </li>
+            );
+        }
+        if(this.props.current ===4){
+                c=this.props.values.map(
+                (x) => <li>
+                NAME:{x.name}
+                <input type='checkbox' name={x.name} onChange={this.handleCheckbox} />
+                </li>
+            );
+        }
+        if(this.props.current ===5){
+                c=this.props.values.map(
+                (x) => <li>
+                NAME:{x.name}
                 <input type='checkbox' name={x.name} onChange={this.handleCheckbox} />
                 </li>
             );
