@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^allexercises/', views.all_exercises),
     url(r'^allsupplements', views.all_supplements),
     url(r'^allfoods/', views.all_foods),
+    url(r'^allmuscles/', views.all_muscles),
     url(r'^attendence/', views.getattendence),
     url(r'^feepayment/', views.getfeedetails),
     url(r'^test/', views.test),

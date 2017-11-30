@@ -45,7 +45,8 @@ def signup(request):
     print(email)
     print(name)
     print(dob)
-    print(len(allergies))
+    print(allergies)
+    print(injuries)
 
     # create user
     user = User.objects.create_user(username=username, password=password, email=email)
@@ -96,7 +97,7 @@ def signup(request):
             a.save()
 
     for injury in injuries:
-        if(len(allergy) > 2):
+        if(len(injury) > 2):
             i = Injuries(
                 member=m,
                 muscle=Muscles.objects.get(name=injury)
@@ -146,6 +147,13 @@ def all_exercises(request):
 def all_supplements(request):
     supplements = Supplements.objects.all()
     serializer = SupplementsSerializer(supplements, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'POST'])
+def all_muscles(request):
+    muscles = Muscles.objects.all();
+    serializer = MusclesSerializer(muscles, many=True)
     return Response(serializer.data)
 
 
