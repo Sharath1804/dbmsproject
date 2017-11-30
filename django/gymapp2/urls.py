@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'api-token-auth/', token_auth_views.obtain_auth_token),
     url(r'userlist/', views.user_list),
     url(r'^signup/', views.signup),
-    url(r'^updatedetails', views.update_details),
+    url(r'^update', views.update_details),
     url(r'^allexercises/', views.all_exercises),
     url(r'^allsupplements', views.all_supplements),
     url(r'^allfoods/', views.all_foods),

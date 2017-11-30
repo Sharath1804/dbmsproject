@@ -3,6 +3,7 @@ from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.db import IntegrityError
 
 from .models import Foods
 from .models import AuthUser
@@ -71,7 +72,6 @@ def signup(request):
         )
         d.save()
 
-
     for exercise in exercises:
         e = Workoutplans(
             member=m,
@@ -88,7 +88,7 @@ def signup(request):
         s.save()
 
     for allergy in allergies:
-        if(len(allergy) > 2):
+        if (len(allergy) > 2):
             a = Allergies(
                 member=m,
                 food=Foods.objects.get(name=allergy)
@@ -97,7 +97,7 @@ def signup(request):
             a.save()
 
     for injury in injuries:
-        if(len(injury) > 2):
+        if (len(injury) > 2):
             i = Injuries(
                 member=m,
                 muscle=Muscles.objects.get(name=injury)
@@ -109,24 +109,70 @@ def signup(request):
 
 @api_view(['POST'])
 def update_details(request):
-    password = request.data['password']
-    email = request.data['email']
-    name = request.data['name']
-    dob = request.data['dob']
-    sex = request.data['sex']
-    phone = request.data['phone']
-    foods = request.data['foods'].split(',')
-    allergies = request.data['allergies'].split(',')
-    injuries = request.data['injuries'].split(',')
-    exercises = request.data['exercises'].split(',')
-    supplements = request.data['supplements'].split(',')
+    if request.auth is not None:
+        foods = request.data['foods'].split(',')
+        allergies = request.data['allergies'].split(',')
+        injuries = request.data['injuries'].split(',')
+        exercises = request.data['exercises'].split(',')
+        supplements = request.data['supplements'].split(',')
 
-    dietplan=[]
     a = AuthUser.objects.get(username=request.user.username)
-    dp = AuthUser.objects.get(member=a.members)
-    for d in dp :
-        dietplan.append(d.food)
+    m = a.members
 
+    for food in foods:
+        try:
+            d = Dietplans(
+                member=m,
+                food=Foods.objects.get(name=food)
+            )
+            d.save()
+
+        except IntegrityError:
+            pass
+    for exercise in exercises:
+        try:
+            e = Workoutplans(
+                member=m,
+                exercise=Exercises.objects.get(exercise_name=exercise)
+
+            )
+            e.save()
+        except IntegrityError:
+            pass
+
+    for supplement in supplements:
+        try:
+            s = Supplementplans(
+                member=m,
+                supplement=Supplements.objects.get(name=supplement)
+            )
+            s.save()
+        except IntegrityError:
+            pass
+
+    for allergy in allergies:
+        try:
+            if (len(allergy) > 2):
+                a = Allergies(
+                    member=m,
+                    food=Foods.objects.get(name=allergy)
+
+                )
+                a.save()
+        except IntegrityError:
+            pass
+
+    for injury in injuries:
+        try:
+            if (len(injury) > 2):
+                i = Injuries(
+                    member=m,
+                    muscle=Muscles.objects.get(name=injury)
+                )
+                i.save()
+        except IntegrityError:
+            pass
+    return Response(status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET', 'POST'])
