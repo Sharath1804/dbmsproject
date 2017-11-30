@@ -40,6 +40,12 @@ class Signup extends React.Component {
 		this.addSupplement = this.addSupplement.bind(this);
 		this.removeSupplement = this.removeSupplement.bind(this);
 
+		this.addInjury = this.addInjury.bind(this);
+		this.removeInjury = this.removeInjury.bind(this);
+
+		this.addAllergy = this.addAllergy.bind(this);
+		this.removeAllergy = this.removeAllergy.bind(this);
+
 		this.handleFinalSubmit = this.handleFinalSubmit.bind(this);
 
 		this.allfoods = {
@@ -49,6 +55,10 @@ class Signup extends React.Component {
 
 		};
 		this.allexercises = {
+
+		};
+
+		this.allmuscles = {
 
 		};
 		this.fprops = {};
@@ -170,7 +180,7 @@ class Signup extends React.Component {
 		this.setState(state);
 	}
 
-	addInjury() {
+	addInjury(v) {
 		console.log("Adding " + v);
 		this.injuries_values_temp[v.toString()] = v;
 		var x = Object.keys(this.injuries_values_temp);
@@ -183,18 +193,64 @@ class Signup extends React.Component {
 		final = final.replace(/,*$/,'');
 		var state = this.state;
 		state.requestObject.injuries= final;
+		this.setState = state;
 		console.log("Request Object" );
 		console.log(this.state.requestObject);
 	}
 
-	removeInjury() {
+	removeInjury(v) {
+		console.log("Adding " + v);
+		delete this.injuries_values_temp[v];
+		var x = Object.keys(this.injuries_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.injuries_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.injuries= final;
+		this.setState = state;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
 
 	}
-	addAllergy() {
+	addAllergy(v) {
+		console.log("Adding " + v);
+		this.allergies_values_temp[v.toString()] = v;
+		var x = Object.keys(this.allergies_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.allergies_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.allergies= final;
+		this.setState(state);
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
 
 	}
 
-	removeAllergy() {
+	removeAllergy(v) {
+		console.log("Adding " + v);
+		delete this.allergies_values_temp[v];
+		var x = Object.keys(this.allergies_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.allergies_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.allergies= final;
+		this.setState(state);
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
 
 	}
 
@@ -262,6 +318,7 @@ getdata() {
 	var foods = baseurl + "allfoods/";
 	var exercises= baseurl + "allexercises/";
 	var supplements = baseurl + "allsupplements/";
+	var muscles = baseurl + "allmuscles/";
 	axios.get(foods)
 	.then(function(response){
 		this.allfoods = response.data;
@@ -432,7 +489,7 @@ render() {
 			</p>
 			<div>
 			<h1>Select Food</h1>
-			<CheckBoxes current = {this.fprops.current} values = {this.fprops.values.slice()} addFood = {this.addFood} removeFood = {this.removeFood} />
+			<CheckBoxes current = {1} values = {this.allfoods.slice()} addFood = {this.addFood} removeFood = {this.removeFood} />
 			</div>
 			<div>
 			<h1>Select Exercises</h1>
@@ -449,7 +506,28 @@ render() {
 			</div>
 		)
 	}
-	if(this.state.current === 4)
+	if(this.state.current === 4) {
+		return (
+			<div>
+			<p>
+			<h1>Injuries and Allergies</h1>
+			</p>
+			<div>
+			<h1>Select Allergies</h1>
+			<CheckBoxes current = {4} values = {this.allfoods.slice()} addAllergy = {this.addAllergy} removeAllergy = {this.removeAllergy} />
+			</div>
+			<div>
+			<h1>Select Injuries</h1>
+			<CheckBoxes current = {5} values = {this.allmuscles.slice()} addInjury = {this.addInjury} removeInjury = {this.removeInjury} />
+			</div>
+			<button onClick={this.handleBack}>Back</button>
+			<p>
+			<button onClick={this.handleNext}>Next</button>
+			</p>
+			</div>
+		)
+	}
+	if(this.state.current === 5)
 	return (
 		<div>
 		<p>
