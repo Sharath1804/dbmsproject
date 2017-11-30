@@ -89,6 +89,11 @@ class Home extends React.Component {
             state.current = 5;
             this.setState(state);
         }
+        if(name === 'alandin') {
+            console.log("alandin");
+            state.current = 6;
+            this.setState(state);
+        }
     }
 
     render() {
@@ -108,6 +113,7 @@ class Home extends React.Component {
             <button name="dietplans" onClick={this.handleClick}>DIET PLAN</button>
             <button name="workoutplans" onClick={this.handleClick}>WORKOUT PLAN</button>
             <button name="supplementplans" onClick={this.handleClick}>SUPPLEMENT PLAN</button>
+            <button name="alandin" onClick={this.handleClick}> ALLERGIES AND INJURIES </button>
             <button name="edit" onClick={this.handleClick}>EDIT INFO</button>
             <button name="logout" onClick={this.handleClick}>LOGOUT</button>
             </div>
@@ -118,9 +124,11 @@ class Home extends React.Component {
         console.log('in getData');
         var baseurl = 'http://localhost:8000/gymapp2/'
         var requestObject = {};
+
         var axiosInstance = axios.create({
             headers:{Authorization:'Token ' + localStorage.getItem('token')}
         });
+
         if(Object.keys(this.info).length === 0) {
             //getinfo
             var url = baseurl + 'info/';
@@ -140,7 +148,7 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(Object.keys(this.dietplan).length === 0) {
+        if(Object.keys(this.dietplan).length === 0 || this.state.current === 2) {
             //getdiet
             var url = baseurl + 'dietplan/';
             console.log(url);
@@ -158,7 +166,7 @@ class Home extends React.Component {
             })
             console.log('after axios');
         }
-        if(Object.keys(this.workoutplan).length === 0) {
+        if(Object.keys(this.workoutplan).length === 0 || this.state.current === 3) {
             //getworkouts
             var url = baseurl + 'workoutplan/';
             console.log(url);
@@ -173,7 +181,7 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(Object.keys(this.supplementplan).length === 0) {
+        if(Object.keys(this.supplementplan).length === 0 || this.state.current === 4) {
             //getsupplements
             var url = baseurl + 'supplementplan/';
             console.log(url);
@@ -188,22 +196,22 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(Object.keys(this.injuries).length === 0) {
+        if(this.state.current === 6) {
             url = baseurl + 'injuries/';
             axiosInstance.post(url, requestObject )
             .then(function(response) {
-                console.log(response.data);
+                console.log("ALANDIN" , response.data);
                 this.injuries = response.data;
             }.bind(this))
             .catch(function(error){
                 console.log(error);
             })
         }
-        if(Object.keys(this.allergies).length === 0) {
+        if(this.state.current === 6) {
             url = baseurl + 'allergies/';
             axiosInstance.post(url, requestObject )
             .then(function(response) {
-                console.log(response.data);
+                console.log("ALANDIN",response.data);
                 this.allergies = response.data;
             }.bind(this))
             .catch(function(error){
@@ -311,6 +319,17 @@ class Home extends React.Component {
                 allergies = {this.allergies.slice()}
                 />
             )
+        }
+
+        if(this.state.current===6) {
+            this.getData();
+            return(
+
+            <div>
+            <pre>{JSON.stringify(this.allergies, null, 5)}</pre>
+            <pre>{JSON.stringify(this.injuries, null, 5)}</pre>
+            </div>
+        );
         }
     }
 }

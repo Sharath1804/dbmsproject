@@ -13,7 +13,7 @@ class Signup extends React.Component {
 				password:'',
 				name:'',
 				phone:'',
-				age:'',
+				dob:'',
 				sex:'',
 				email:'',
 				allergies:'',
