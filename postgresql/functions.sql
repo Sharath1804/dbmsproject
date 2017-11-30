@@ -1,5 +1,5 @@
 create function remove_injuries_workouts ()  
-returns trigger as $$
+returns trigger as $injuries_trigger$
 begin
 DELETE
 FROM workoutplans
@@ -24,13 +24,14 @@ WHERE exercise_id in (
           WHERE e.id = w.exercise_id
             AND w.member_id=i.member_id)
      );
+	RETURN NULL;
 end
 ;
-$$ LANGUAGE plpgsql;
+$injuries_trigger$ LANGUAGE plpgsql;
 
 
 create function remove_allergies_foods ()  
-returns trigger as $$
+returns trigger as $allergies_trigger$
 begin
 DELETE 
 FROM dietplans
@@ -55,6 +56,7 @@ WHERE food_id in (
           WHERE f.id = d.food_id
             AND d.member_id=a.member_id)
      );
+	RETURN NULL;
 end
 ;
-$$ LANGUAGE plpgsql;
+$allergies_trigger$ LANGUAGE plpgsql;

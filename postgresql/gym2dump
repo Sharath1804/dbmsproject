@@ -34,14 +34,14 @@ SET search_path = public, pg_catalog;
 -- Name: remove_allergies_foods(); Type: FUNCTION; Schema: public; Owner: shishirdongre
 --
 
-CREATE FUNCTION remove_allergies_foods() RETURNS void
+CREATE FUNCTION remove_allergies_foods() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
 DELETE 
 FROM dietplans
 WHERE food_id in (
-SELECT d.food_id
+	SELECT d.food_id
      FROM dietplans d,
           allergies a,
           foods f
@@ -61,6 +61,7 @@ SELECT d.food_id
           WHERE f.id = d.food_id
             AND d.member_id=a.member_id)
      );
+	RETURN NULL;
 end
 ;
 $$;
@@ -72,14 +73,14 @@ ALTER FUNCTION public.remove_allergies_foods() OWNER TO shishirdongre;
 -- Name: remove_injuries_workouts(); Type: FUNCTION; Schema: public; Owner: shishirdongre
 --
 
-CREATE FUNCTION remove_injuries_workouts() RETURNS void
+CREATE FUNCTION remove_injuries_workouts() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
 DELETE
 FROM workoutplans
 WHERE exercise_id in (
-SELECT w.exercise_id
+	SELECT w.exercise_id
      FROM workoutplans w,
           injuries i,
           exercises e
@@ -99,6 +100,7 @@ SELECT w.exercise_id
           WHERE e.id = w.exercise_id
             AND w.member_id=i.member_id)
      );
+	RETURN NULL;
 end
 ;
 $$;
@@ -1068,6 +1070,11 @@ COPY allergies (id, food_id, member_id) FROM stdin;
 6	20	3
 7	1	4
 8	20	4
+9	3	13
+10	5	13
+11	41	13
+12	36	13
+14	5	15
 \.
 
 
@@ -1075,7 +1082,7 @@ COPY allergies (id, food_id, member_id) FROM stdin;
 -- Name: allergies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('allergies_id_seq', 8, true);
+SELECT pg_catalog.setval('allergies_id_seq', 14, true);
 
 
 --
@@ -1239,6 +1246,10 @@ COPY auth_user (id, password, last_login, is_superuser, username, first_name, la
 4	pbkdf2_sha256$36000$4MNOdKo2zqoU$9PR/v//kDJ8XB5UjGzL+AYhDtTS73lomVm+952SwOFg=	\N	f	dwight			dwight@email.com	f	t	2017-11-25 15:29:42.870956+00
 5	pbkdf2_sha256$36000$v5aIPg6cjon2$IhuQMRbrX1upVxg+HRHtw3soviILSatyMGqpoXAlQK4=	\N	f	jim			jim@email.com	f	t	2017-11-25 16:33:54.720093+00
 11	pbkdf2_sha256$36000$OTHk11s93FTO$ffiLp8lj0yGwnlV0fJs2SmspHPn5Xn+L/noBe9Wvsi8=	\N	f	michaelscott			michael@email.com	f	t	2017-11-25 17:08:30.512528+00
+12	pbkdf2_sha256$36000$XTFaQgFj1J8F$UDN1fwL7XJ37Mye8ElNaExOSedSEy5CklZ8HCDasLr8=	\N	f	asdfasdf			asdf	f	t	2017-11-30 07:02:04.844426+00
+15	pbkdf2_sha256$36000$bKhrl8X7jspX$K6JTI68xVKOS3dsQrW8wgtqIasfZGDb2gAgphgVkFnM=	\N	f	test1			test1@email.com	f	t	2017-11-30 07:29:09.282435+00
+20	pbkdf2_sha256$36000$ed36YPwkcI4z$pVFr0h8j+zRr5M0SXtrdT08MOkNoGc9fYQ75ZcFvrxo=	\N	f	test3			test3@email.com	f	t	2017-11-30 07:46:46.450987+00
+22	pbkdf2_sha256$36000$lVXkwdiz34c6$obRbKPht7CvAHxsix2e5jRGEBTPX6yiUY3TjmxjUuxo=	\N	f	test4			test4@email.com	f	t	2017-11-30 07:54:50.960661+00
 \.
 
 
@@ -1261,7 +1272,7 @@ SELECT pg_catalog.setval('auth_user_groups_id_seq', 1, false);
 -- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('auth_user_id_seq', 11, true);
+SELECT pg_catalog.setval('auth_user_id_seq', 22, true);
 
 
 --
@@ -1289,6 +1300,10 @@ d6c53f6d496b13fd08c3f80503eff12df5a24717	2017-11-24 04:29:44.195415+00	3
 02e0030b9d78d8725013f1c71efe93dd50408d9d	2017-11-25 15:29:43.177923+00	4
 29e706dc3a97fb1c25bf0d6cc651e50ff10d2830	2017-11-25 16:33:54.81338+00	5
 3a1466cc745a684942786f403e1595e21248e6f9	2017-11-25 17:08:30.604553+00	11
+e77cdce4772b7d0071019a641640e25a09cde7cc	2017-11-30 07:02:04.999545+00	12
+81396287b0456556c62c6d55a880bf46db3fcc03	2017-11-30 07:29:09.408163+00	15
+ef0c8401dd1894f21f6c7dbd960fb3ec8470f1b6	2017-11-30 07:46:46.563926+00	20
+de7d9649d90448593766e81732bf2e30ce33a093	2017-11-30 07:54:51.076654+00	22
 \.
 
 
@@ -1308,7 +1323,10 @@ COPY dietplans (id, food_id, member_id) FROM stdin;
 23	17	8
 24	39	8
 25	20	8
-27	1	2
+34	1	13
+35	13	13
+41	1	15
+42	3	15
 \.
 
 
@@ -1316,7 +1334,7 @@ COPY dietplans (id, food_id, member_id) FROM stdin;
 -- Name: dietplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('dietplans_id_seq', 27, true);
+SELECT pg_catalog.setval('dietplans_id_seq', 43, true);
 
 
 --
@@ -1455,7 +1473,6 @@ COPY exercises (id, exercise_name, equipment, muscle_group_id_id) FROM stdin;
 13	dips	body	3
 14	wrist rotation	barbell	5
 15	deadlift	barbell	4
-16	pullups	body	4
 17	pulldown	cable	4
 \.
 
@@ -1547,6 +1564,12 @@ COPY injuries (id, member_id, muscle_id) FROM stdin;
 3	3	3
 4	4	3
 5	4	1
+6	13	1
+7	13	2
+8	13	3
+9	13	4
+10	13	5
+12	15	1
 \.
 
 
@@ -1554,7 +1577,7 @@ COPY injuries (id, member_id, muscle_id) FROM stdin;
 -- Name: injuries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('injuries_id_seq', 5, true);
+SELECT pg_catalog.setval('injuries_id_seq', 12, true);
 
 
 --
@@ -1566,6 +1589,9 @@ COPY members (id, name, dob, sex, phone, user_id) FROM stdin;
 3	dwight	2017-05-05	male	991	4
 4	jim	2017-05-05	male	9090909	5
 8	Michael	1980-01-01	male	999	11
+9	test1	1997-02-13	male	0909	15
+13	test3	1997-02-13	male	9090909	20
+15	test4	1997-02-13	male	989898	22
 \.
 
 
@@ -1573,7 +1599,7 @@ COPY members (id, name, dob, sex, phone, user_id) FROM stdin;
 -- Name: members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('members_id_seq', 8, true);
+SELECT pg_catalog.setval('members_id_seq', 15, true);
 
 
 --
@@ -1610,6 +1636,12 @@ COPY supplementplans (id, member_id, supplement_id) FROM stdin;
 9	8	2
 10	8	3
 11	8	4
+16	13	1
+17	13	2
+18	13	3
+19	13	4
+22	15	2
+23	15	5
 \.
 
 
@@ -1617,7 +1649,7 @@ COPY supplementplans (id, member_id, supplement_id) FROM stdin;
 -- Name: supplementplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('supplementplans_id_seq', 11, true);
+SELECT pg_catalog.setval('supplementplans_id_seq', 23, true);
 
 
 --
@@ -1647,6 +1679,9 @@ SELECT pg_catalog.setval('supplements_id_seq', 1, false);
 --
 
 COPY workoutplans (id, exercise_id, member_id) FROM stdin;
+54	6	15
+55	8	15
+56	12	15
 9	4	8
 21	14	4
 \.
@@ -1656,7 +1691,7 @@ COPY workoutplans (id, exercise_id, member_id) FROM stdin;
 -- Name: workoutplans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dbmsproject
 --
 
-SELECT pg_catalog.setval('workoutplans_id_seq', 25, true);
+SELECT pg_catalog.setval('workoutplans_id_seq', 56, true);
 
 
 --
@@ -2174,6 +2209,34 @@ CREATE INDEX workoutplans_exercise_id_c345d507 ON workoutplans USING btree (exer
 --
 
 CREATE INDEX workoutplans_member_id_1fd94a5a ON workoutplans USING btree (member_id);
+
+
+--
+-- Name: allergies remove_allergies_trigger; Type: TRIGGER; Schema: public; Owner: dbmsproject
+--
+
+CREATE TRIGGER remove_allergies_trigger AFTER INSERT ON allergies FOR EACH ROW EXECUTE PROCEDURE remove_allergies_foods();
+
+
+--
+-- Name: dietplans remove_allergies_trigger; Type: TRIGGER; Schema: public; Owner: dbmsproject
+--
+
+CREATE TRIGGER remove_allergies_trigger AFTER INSERT ON dietplans FOR EACH ROW EXECUTE PROCEDURE remove_allergies_foods();
+
+
+--
+-- Name: injuries remove_injuries_trigger; Type: TRIGGER; Schema: public; Owner: dbmsproject
+--
+
+CREATE TRIGGER remove_injuries_trigger AFTER INSERT ON injuries FOR EACH ROW EXECUTE PROCEDURE remove_injuries_workouts();
+
+
+--
+-- Name: workoutplans remove_injuries_trigger; Type: TRIGGER; Schema: public; Owner: dbmsproject
+--
+
+CREATE TRIGGER remove_injuries_trigger AFTER INSERT ON workoutplans FOR EACH ROW EXECUTE PROCEDURE remove_injuries_workouts();
 
 
 --
