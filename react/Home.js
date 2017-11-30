@@ -31,6 +31,23 @@ class Home extends React.Component {
         this.info = {
 
         }
+
+        this.injuries = {
+
+        }
+
+        this.allergies = {
+
+        }
+
+        this.allmuscles = {
+
+        }
+
+        this.allfoods = {
+
+        }
+
         this.buttons = this.buttons.bind(this);
         this.divComponent = this.divComponent.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -96,7 +113,7 @@ class Home extends React.Component {
         var axiosInstance = axios.create({
             headers:{Authorization:'Token ' + localStorage.getItem('token')}
         });
-        if(this.state.current === 1 && Object.keys(this.info).length === 0) {
+        if(Object.keys(this.info).length === 0) {
             //getinfo
             var url = baseurl + 'info/';
             console.log(url);
@@ -115,7 +132,7 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(this.state.current === 2 && Object.keys(this.dietplan).length === 0) {
+        if(Object.keys(this.dietplan).length === 0) {
             //getdiet
             var url = baseurl + 'dietplan/';
             console.log(url);
@@ -133,7 +150,7 @@ class Home extends React.Component {
             })
             console.log('after axios');
         }
-        if(this.state.current === 3 && Object.keys(this.workoutplan).length === 0) {
+        if(Object.keys(this.workoutplan).length === 0) {
             //getworkouts
             var url = baseurl + 'workoutplan/';
             console.log(url);
@@ -148,7 +165,7 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
-        if(this.state.current === 4 && Object.keys(this.supplementplan).length === 0) {
+        if(Object.keys(this.supplementplan).length === 0) {
             //getsupplements
             var url = baseurl + 'supplementplan/';
             console.log(url);
@@ -163,6 +180,53 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
+        if(Object.keys(this.injuries).length === 0) {
+            url = baseurl + 'injuries/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.injuries = response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+        if(Object.keys(this.allergies).length === 0) {
+            url = baseurl + 'allergies/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.allergies = response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+        if(Object.keys(this.allmuscles).length === 0) {
+            url = baseurl + 'allmuscles/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.allmuscles = response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+
+        if(Object.keys(this.allfoods).length === 0) {
+            url = baseurl + 'allfoods/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.allfoods = response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+
+
     }
 
     divComponent() {
@@ -204,16 +268,16 @@ class Home extends React.Component {
             )
         }
         if(this.state.current === 5) {
-            var props = {
-                dietplan : this.dietplan,
-                workoutplan : this.workoutplan,
-                supplementplan : this.supplementplan,
-                info : this.info,
-                injuries : this.injuries,
-                allergies : this.allergies
-            }
             return(
-                <Edit props={props} />
+                <Edit
+                allmuscles = {this.allmuscles.slice()}
+                allfoods = {this.allfoods.slice()}
+                dietplan = {this.dietplan}
+                supplementplan = {this.supplementplan}
+                workoutplan = {this.workoutplan}
+                injuries = {this.injuries.slice()}
+                allergies = {this.allergies.slice()}
+                />
             )
         }
     }
