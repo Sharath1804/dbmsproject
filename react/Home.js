@@ -48,6 +48,14 @@ class Home extends React.Component {
 
         }
 
+        this.allexercises = {
+
+        }
+
+        this.allsupplements = {
+
+        }
+
         this.buttons = this.buttons.bind(this);
         this.divComponent = this.divComponent.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -225,6 +233,28 @@ class Home extends React.Component {
                 console.log(error);
             })
         }
+        if(Object.keys(this.allexercises).length === 0) {
+            url = baseurl + 'allexercises/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.allexercises = response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+        if(Object.keys(this.allsupplements).length === 0) {
+            url = baseurl + 'allsupplements/';
+            axiosInstance.post(url, requestObject )
+            .then(function(response) {
+                console.log(response.data);
+                this.allsupplements= response.data;
+            }.bind(this))
+            .catch(function(error){
+                console.log(error);
+            })
+        }
 
 
     }
@@ -270,8 +300,10 @@ class Home extends React.Component {
         if(this.state.current === 5) {
             return(
                 <Edit
-                allmuscles = {this.allmuscles.slice()}
+                allexercises = {this.allexercises.slice()}
+                allsupplements = {this.allsupplements.slice()}
                 allfoods = {this.allfoods.slice()}
+                allmuscles = {this.allmuscles.slice()}
                 dietplan = {this.dietplan}
                 supplementplan = {this.supplementplan}
                 workoutplan = {this.workoutplan}

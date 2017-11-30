@@ -65,6 +65,56 @@ class CheckBoxes extends React.Component {
                 this.props.removeInjury(e.target.name);
             }
         }
+        if(this.props.current === 6) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
+        if(this.props.current === 7) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
+        if(this.props.current === 8) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
+        if(this.props.current === 9) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
+        if(this.props.current === 10) {
+            if(e.target.checked == true) {
+                console.log("checked " + e.target.name);
+                this.props.addInjury(e.target.name);
+            }
+            if(e.target.checked == false) {
+                console.log("unchecked " + e.target.name);
+                this.props.removeInjury(e.target.name);
+            }
+        }
 
     }
 
@@ -175,21 +225,20 @@ class CheckBoxes extends React.Component {
         //WORKOUTPLAN
         if(this.props.current===8) {
             var checkedStatus = false;
-            var allergynames = this.props.allergies.slice().map((x) => x.food.name);
-            console.log("allergynames",allergynames);
-
+            var workoutplanexercises = this.props.workoutplan.slice().map((x) => x.exercise.exercise_name);
+            console.log("workoutplan",workoutplanexercises);
             var isChecked = function(x) {
 
-                if(allergynames.indexOf(x) > -1)
+                if(workoutplanexercises.indexOf(x) > -1)
                     checkedStatus=true;
                 else
                     checkedStatus=false;
             }
-            c=this.props.allfoods.map(
+            c=this.props.allexercises.map(
             (x) => <li>
-            {isChecked(x.name)}
-            NAME:{x.name}
-            <input type='checkbox' name={x.name} onChange={this.handleCheckbox} defaultChecked={checkedStatus} />
+            {isChecked(x.exercise_name)}
+            NAME:{x.exercise_name}
+            <input type='checkbox' name={x.exercise_name} onChange={this.handleCheckbox} defaultChecked={checkedStatus} />
             </li>
         );
         }
@@ -197,12 +246,12 @@ class CheckBoxes extends React.Component {
         //DIETPLAN
         if(this.props.current===9) {
             var checkedStatus = false;
-            var allergynames = this.props.allergies.slice().map((x) => x.food.name);
-            console.log("allergynames",allergynames);
+            var dietplanfoods = this.props.dietplan.slice().map((x) => x.food.name);
+            console.log(dietplanfoods);
 
             var isChecked = function(x) {
 
-                if(allergynames.indexOf(x) > -1)
+                if(dietplanfoods.indexOf(x) > -1)
                     checkedStatus=true;
                 else
                     checkedStatus=false;
@@ -219,17 +268,17 @@ class CheckBoxes extends React.Component {
         //SUPPLEMENTPLAN
         if(this.props.current===10) {
             var checkedStatus = false;
-            var allergynames = this.props.allergies.slice().map((x) => x.food.name);
-            console.log("allergynames",allergynames);
+            var supplementnames = this.props.supplementplan.slice().map((x) => x.supplement.name);
+            console.log(supplementnames);
 
             var isChecked = function(x) {
 
-                if(allergynames.indexOf(x) > -1)
+                if(supplementnames.indexOf(x) > -1)
                     checkedStatus=true;
                 else
                     checkedStatus=false;
             }
-            c=this.props.allfoods.map(
+            c=this.props.allsupplements.map(
             (x) => <li>
             {isChecked(x.name)}
             NAME:{x.name}
