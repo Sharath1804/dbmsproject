@@ -1,0 +1,600 @@
+import React from 'react';
+import axios from 'axios';
+import CheckBoxes from './CheckBoxes';
+
+var v;
+var muscles;
+class Signup extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			current : 1,
+			requestObject : {
+				username:'',
+				password:'',
+				name:'',
+				phone:'',
+				age:'',
+				sex:'',
+				email:'',
+				allergies:'',
+				injuries:'',
+				foods:'',
+				exercises:'',
+				supplements:'',
+				usernameStatus:'',
+			},
+			background : 'white'
+		};
+		this.handleNext = this.handleNext.bind(this);
+		this.handleBack= this.handleBack.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.checkUsername = this.checkUsername.bind(this);
+		this.getdata = this.getdata.bind(this);
+
+		this.addFood = this.addFood.bind(this);
+		this.removeFood = this.removeFood.bind(this);
+
+		this.addExercise = this.addExercise.bind(this);
+		this.removeExercise = this.removeExercise.bind(this);
+
+		this.addSupplement = this.addSupplement.bind(this);
+		this.removeSupplement = this.removeSupplement.bind(this);
+
+		this.handleFinalSubmit = this.handleFinalSubmit.bind(this);
+
+		this.allsupplements = {
+
+        };
+			
+				
+		this.allfoods = {
+
+        };
+			
+		
+		this.allexercises = {
+
+        };
+
+
+		this.fprops = {};
+		this.eprops = {};
+		this.sprops = {};
+		this.food_values_temp = {};
+		this.exercises_values_temp = {};
+		this.supplements_values_temp = {};
+		this.injuries_values_temp= {};
+		this.allergies_values_temp= {};
+	}
+
+	addFood(v) {
+		console.log("Adding " + v);
+		this.food_values_temp[v.toString()] = v;
+		var x = Object.keys(this.food_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.food_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.foods = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
+		//console.log(this.food_values_temp);
+	}
+	addExercise(v) {
+		console.log("Adding " + v);
+		this.exercises_values_temp[v.toString()] = v;
+		var x = Object.keys(this.exercises_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.exercises_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.exercises = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
+	}
+	addSupplement(v) {
+		console.log("Adding " + v);
+		console.log("Adding " + v);
+		this.supplements_values_temp[v.toString()] = v;
+		var x = Object.keys(this.supplements_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.supplements_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.supplements = final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+		this.setState(state);
+
+	}
+	removeFood(v) {
+		console.log("Removing " + v);
+		delete this.food_values_temp[v];
+		var x = Object.keys(this.food_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.food_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.foods = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
+	}
+	removeExercise(v) {
+		console.log("Removing " + v);
+		console.log("Removing " + v);
+		delete this.exercises_values_temp[v];
+		var x = Object.keys(this.exercises_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.exercises_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.exercises = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
+	}
+	removeSupplement(v) {
+		console.log("Removing " + v);
+		console.log("Removing " + v);
+		console.log("Removing " + v);
+		delete this.supplements_values_temp[v];
+		var x = Object.keys(this.supplements_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.supplements_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.supplements = final;
+		console.log("Request Object");
+		console.log(this.state.requestObject);
+		this.setState(state);
+	}
+
+	addInjury() {
+		console.log("Adding " + v);
+		this.injuries_values_temp[v.toString()] = v;
+		var x = Object.keys(this.injuries_values_temp);
+		var i;
+		var final = '';
+		for(i=0;i<x.length;i++) {
+			final = final+','+this.injuries_values_temp[x[i]];
+		}
+		final = final.replace(/^,*/, '');
+		final = final.replace(/,*$/,'');
+		var state = this.state;
+		state.requestObject.injuries= final;
+		console.log("Request Object" );
+		console.log(this.state.requestObject);
+	}
+
+	removeInjury() {
+
+	}
+	addAllergy() {
+
+	}
+
+	removeAllergy() {
+
+	}
+
+
+	handleNext() {
+
+		var current = this.state.current;
+		if(current === 1) {
+			//this.getdata();
+			var currentUpdated = current+1;
+			this.setState({
+				current : currentUpdated
+			});
+		}
+		else {
+			var currentUpdated = current+1;
+			this.setState({
+				current : currentUpdated
+			});
+		}
+	}
+
+
+	checkUsername() {
+		var username = this.state.requestObject.username;
+		var available = false;
+		console.log(username);
+		var url = 'http://localhost:8000/gymapp2/isavailable?username=' + username;
+		var isUsernameAvailable = function() {
+			axios.get(url)
+			.then(function(response) {
+				console.log('got response');
+				console.log(response);
+				available = response.data.available;
+
+				if(available == "true") {
+					var state = this.state;
+					this.getdata();
+
+					state.current = 2;
+					state.usernameStatus='';
+					this.setState(state)
+				}
+
+				else {
+					var state = this.state
+					state.usernameStatus='User name not available';
+					state.background = 'red';
+					this.setState(state)
+
+				}
+				//	console.log("available = " + available);
+			}.bind(this))
+			.catch(function(error){
+				console.log(error);
+			}
+		)
+	}.bind(this);
+	isUsernameAvailable();
+}
+
+
+getdata() {
+	var baseurl = "http://localhost:8000/gymapp2/";
+	var foods = baseurl + "allfoods/";
+	var exercises= baseurl + "allexercises/";
+	var supplements = baseurl + "allsupplements/";
+	axios.get(foods)
+	.then(function(response){
+		this.allfoods = response.data;
+		console.log("allfoods global");
+		console.log(this.allfoods);
+		this.fprops = {
+						values: this.allfoods.slice(),
+						current : 1,
+						addFood : this.addFood,
+						removeFood : this.removeFood
+					};
+	}.bind(this))
+	.catch(function(error){
+		console.log('error');
+	});
+
+	axios.get(exercises)
+	.then(function(response){
+		this.allexercises = response.data;
+		this.eprops = {
+			values:this.allexercises.slice(),
+			current:2,
+			addExercise : this.addExercise,
+			removeExercise : this.removeExercise
+			};
+		console.log(this.allexercises);
+	}.bind(this))
+	.catch(function(error){
+		console.log('error');
+	});
+
+	axios.get(supplements)
+	.then(function(response){
+		this.allsupplements = response.data;
+		this.sprops = {
+		values:this.allfoods.slice(),
+		current:3,
+		addSupplement : this.addSupplement,
+		removeSupplement : this.removeSupplement
+		}
+		console.log(this.allsupplements);
+	}.bind(this))
+	.catch(function(error){
+		console.log('error');
+	});
+
+	axios.get(muscles)
+	.then(function(response){
+		this.allmuscles= response.data;
+	}.bind(this))
+	.catch(function(error){
+		console.log('error');
+	});
+}
+
+
+handleFinalSubmit() {
+	var baseurl = 'http://localhost:8000/gymapp2/signup/';
+	axios.post(baseurl, this.state.requestObject)
+	.then(function(response) {
+		console.log(response);
+	})
+	.catch(function(error) {
+		console.log(error);
+	});
+}
+
+handleInputChange(e) {
+
+	const target = e.target;
+	var r = this.state.requestObject;
+	if(target.name === 'username') {
+		r.username = target.value;
+	}
+	if(target.name === 'password') {
+		r.password = target.value;
+	}
+	if(target.name === 'name') {
+		r.name = target.value;
+	}
+	if(target.name === 'phone') {
+		r.phone = target.value;
+	}
+	if(target.name === 'age') {
+		r.age = target.value;
+	}
+	if(target.name === 'dob') {
+		r.dob = target.value;
+	}
+	if(target.name === 'sex') {
+		r.sex= target.value;
+	}
+	if(target.name === 'email') {
+		r.email = target.value;
+	}
+	var s = this.state;
+	s.requestObject = r;
+	console.log(s);
+	this.setState(s);
+
+}
+
+
+handleBack() {
+	var current = this.state.current;
+	var currentUpdated = current-1;
+	this.setState({
+		current : currentUpdated
+	});
+}
+
+
+render() {
+	var style = {
+		background : this.state.background,
+		margin : '10px',
+		height : '30px',
+		'text-align' : 'center',
+		'font-size' : '1.5em'
+	};
+	if(this.state.current === 1)
+	return (
+		<div>
+		<center>
+			<h3>Enter Username and password</h3>
+			<p><b>Pick a unique username and password to login.</b></p>
+			<div style={style}>{this.state.usernameStatus}</div>
+		</center>
+		<center>
+		<div className="row">
+		<form className="col s5 offset-s5 valign">
+		  <div className="row ">
+			<div className="input-field col s6 offset-s4 valign ">
+			<input type="text" name="username" onBlur={this.handleInputChange} required/>
+			  <label for="UserName">User name</label>
+			</div>
+		  </div>
+		  <div className="row">
+			<div className="input-field col s6">
+			 <input type="password" name="password" onBlur={this.handleInputChange} required/>
+			  <label for="password">Password</label>
+			</div>
+		  </div>
+		</form>
+	  </div>
+	  </center>
+		<center>
+		<button className="waves-effect waves-light btn" onClick={this.handleNext }>Next</button>
+		<button className="waves-effect waves-light btn" onClick={this.props.logout}>Back</button>
+		</center>
+			</div>
+		
+	
+	)
+	if(this.state.current === 2)
+	return (
+		<div>
+		<p>
+      <center>
+		<h3>User Information </h3>
+    </center>
+		</p>
+<center>
+		<div id='form-div'>
+   <div className="row">
+    <form className="col s5 offset-s5 valign">
+      <div className="row ">
+        <div className="input-field col s6 ">
+        <input type="text" name="name" onBlur={this.handleInputChange} defaultValue={this.state.requestObject.name} />
+        <label for="Name">Name</label>
+        </div>
+      </div>
+      <div className="row">
+        <div className="input-field col s6">
+        <input type="text" name="phone" onBlur={this.handleInputChange} defaultValue={this.state.requestObject.phone} />
+        <label for="Phone">Phone</label>
+        </div>
+      </div>
+      <div className="row">
+        <div className="input-field col s6">
+        <input type="text" name="age" onBlur={this.handleInputChange} defaultVlue={this.state.requestObject.age} />
+        <label for="Age">Age</label>
+        </div>
+      </div>
+      <div className="row">
+        <div className="input-field col s6">
+        <input type="text" name="sex"  onBlur={this.handleInputChange} defaultValue={this.state.requestObject.sex} />
+        <label for="Sex">Sex</label>
+        </div>
+      </div>
+      <div className="row">
+        <div className="input-field col s6">
+        <input type="text" name="dob"  onBlur={this.handleInputChange} defaultValue={this.state.requestObject.dob} />
+        <label for="DOB">Date Of Birth</label>
+        </div>
+      </div>
+      <div className="row">
+        <div className="input-field col s6">
+        <input type="text" name="email"  onBlur={this.handleInputChange} defaultValue={this.state.requestObject.dob} />
+        <label for="Email">Email</label>
+        </div>
+      </div>
+    </form>
+  </div>
+	</div>
+    </center>
+    <center>
+		<button  className="waves-effect waves-light btn" onClick={this.handleBack}>Back</button>
+		<button  className="waves-effect waves-light btn" onClick={this.handleNext}>Next</button>
+    </center>
+		</div>
+
+	)
+	if(this.state.current === 3) {
+		return (
+			<div>
+			<p>
+			<center>
+			<h3>Form Plans</h3>
+			</center>
+			</p>
+			<div  style={{paddingLeft:"13%"}}>
+			<center>
+			<div class="row">
+      			<div class="col s0 m3">
+      			  <div class="card-panel gray">
+					<center>
+					<h4>Select Food</h4>
+					</center>
+					<CheckBoxes current = {1} values = {this.allfoods.slice()} addFood = {this.addFood} removeFood = {this.removeFood} />
+        		</div>
+      		</div>
+
+      			<div class="col s4 m3">
+      			  <div class="card-panel gray">
+					<center>
+					<h4>Select Exercises</h4>
+					</center>
+					<CheckBoxes current = {2} values = {this.allexercises.slice()} addExercise = {this.addExercise} removeExercise = {this.removeExercise} />
+        		</div>
+      		</div>	
+
+				<div class="col s4 m3">
+      			  <div class="card-panel gray">
+					<center>
+					<h4>Select Supplements</h4>
+					</center>
+					<CheckBoxes current = {3} values = {this.allsupplements.slice()} addSupplement = {this.addSupplement} removeSupplement= {this.removeSupplement} />
+        	</div>
+      		</div>
+			</div>
+			</center>
+			</div>
+			<center>
+			<button className="waves-effect waves-light btn" onClick={this.handleBack}>Back</button>
+			<button className="waves-effect waves-light btn" onClick={this.handleNext}>Next</button>
+			</center>
+			</div>
+		)
+	}
+
+	if(this.state.current === 4) {
+		return (
+			<div>
+			<p>
+			<center>
+			<h4>Injuries and Allergies</h4>
+			</center>
+			</p>
+
+			<div  style={{paddingLeft:"15%"}}>
+
+			<div class="row">
+      			<div class="col s0 m5">
+      			  <div class="card-panel gray">
+					<center>
+					<h4>Select Allergies</h4>
+					</center>
+					<CheckBoxes current = {4} values = {this.allfoods.slice()} addAllergy = {this.addAllergy} removeAllergy = {this.removeAllergy} />
+        		</div>
+      		</div>
+
+      			<div class="col s4 m5">
+      			  <div class="card-panel gray">
+					<center>
+					<h4>Select Injuries</h4>
+					</center>
+					<CheckBoxes current = {5} values = {this.allmuscles.slice()} addInjury = {this.addInjury} removeInjury = {this.removeInjury} />
+        		</div>
+      		</div>
+			</div>
+			</div>
+			<center>
+			<button className="waves-effect waves-light btn" onClick={this.handleBack}>Back</button>
+			<button className="waves-effect waves-light btn" onClick={this.handleNext}>Next</button>
+			</center>
+			</div>
+		)
+	}
+
+
+	if(this.state.current === 5 )
+	return (
+		<div>
+		<p>
+		<center>
+		<h3>Verify data and submit.</h3>
+		</center>
+		</p>
+		<center>
+		<div className="row" style={{paddingLeft:"40%"}}>
+		<div class="col s3 m4">
+		<div class="card-panel gray">
+		<pre>{JSON.stringify(this.state.requestObject,null,2)}</pre>
+		</div>
+		</div>
+		</div>
+		</center>		
+		<center>
+	    <button className="waves-effect waves-light btn" onClick={this.handleBack}>Back</button>
+		<button className="waves-effect waves-light btn" onClick={this.handleFinalSubmit}>Submit</button>
+		</center>
+		</div>
+	)
+}
+}
+
+
+export default Signup;
